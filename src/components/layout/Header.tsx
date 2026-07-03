@@ -5,7 +5,7 @@ import { useAuth } from '@/features/auth/AuthContext';
 import { useAudio } from '@/features/audio/AudioContext';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Shield, User, LogOut, Menu, X, Music, VolumeX } from 'lucide-react';
+import { Shield, User, LogOut, Menu, X, Music, VolumeX, LayoutDashboard } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 
 export default function Header() {
@@ -78,6 +78,12 @@ export default function Header() {
           
           {user ? (
             <>
+              {user.role === 'admin' && (
+                <Link href="/admin" className="flex items-center gap-2 text-zinc-600 hover:text-zinc-900 transition-colors">
+                  <LayoutDashboard className="w-4 h-4" strokeWidth={1.5} />
+                  <span className="text-[14px] font-medium">Admin</span>
+                </Link>
+              )}
               <Link href="/dashboard" className="flex items-center gap-2 text-zinc-600 hover:text-zinc-900 transition-colors group">
                 <User className="w-4 h-4" strokeWidth={1.5} />
                 <span className="text-[14px] font-medium">{user.name.split(' ')[0]}</span>
@@ -147,12 +153,23 @@ export default function Header() {
               ))}
               <div className="h-px bg-zinc-100 my-1" />
               {user ? (
-                <button
-                  onClick={handleLogout}
-                  className="text-[15px] font-medium text-red-600 text-left flex items-center gap-2"
-                >
-                  <LogOut className="w-4 h-4" /> Log out
-                </button>
+                <>
+                  {user.role === 'admin' && (
+                    <Link
+                      href="/admin"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="text-[15px] font-medium text-zinc-500 flex items-center gap-2"
+                    >
+                      <LayoutDashboard className="w-4 h-4" /> Admin
+                    </Link>
+                  )}
+                  <button
+                    onClick={handleLogout}
+                    className="text-[15px] font-medium text-red-600 text-left flex items-center gap-2"
+                  >
+                    <LogOut className="w-4 h-4" /> Log out
+                  </button>
+                </>
               ) : (
                 <div className="flex gap-3 mt-1">
                   <Link href="/login" onClick={() => setMobileMenuOpen(false)} className="py-2.5 text-[15px] font-semibold text-zinc-900 bg-zinc-100 rounded-full text-center flex-1">

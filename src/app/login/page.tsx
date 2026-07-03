@@ -27,8 +27,8 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      await login(formData.email, formData.password);
-      router.push('/hub');
+      const loggedInUser = await login(formData.email, formData.password);
+      router.push(loggedInUser.role === 'admin' ? '/admin' : '/hub');
     } catch (err: any) {
       setError(err.message || 'Invalid email or password. Please try again.');
     } finally {

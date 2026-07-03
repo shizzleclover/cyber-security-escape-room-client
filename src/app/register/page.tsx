@@ -5,18 +5,31 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/features/auth/AuthContext';
-import { Shield, Mail, Lock, User, ArrowRight, Eye, EyeOff } from 'lucide-react';
+import { Shield, Mail, Lock, User, ArrowRight, Eye, EyeOff, Calendar, Gauge } from 'lucide-react';
+
+const AGE_GROUPS = [
+  { value: 'under-60', label: 'Under 60' },
+  { value: '60-69', label: '60–69' },
+  { value: '70-79', label: '70–79' },
+  { value: '80+', label: '80+' },
+];
 
 export default function RegisterPage() {
   const { register } = useAuth();
   const router = useRouter();
 
-  const [formData, setFormData] = useState({ name: '', email: '', password: '' });
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+    ageGroup: '',
+    digitalConfidence: '3',
+  });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
     if (error) setError('');
   };
@@ -24,15 +37,21 @@ export default function RegisterPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    if (!formData.ageGroup) {
+      setError('Please select your age group.');
+      return;
+    }
+
     setLoading(true);
 
     try {
-      await register({ 
-        name: formData.name, 
-        email: formData.email, 
+      await register({
+        name: formData.name,
+        email: formData.email,
         password: formData.password,
-        ageGroup: 'Not specified',
-        digitalConfidence: 3
+        ageGroup: formData.ageGroup,
+        digitalConfidence: Number(formData.digitalConfidence),
       });
       router.push('/hub');
     } catch (err: any) {
@@ -133,6 +152,50 @@ export default function RegisterPage() {
                 >
                   {showPassword ? <EyeOff strokeWidth={1.5} className="w-5 h-5" /> : <Eye strokeWidth={1.5} className="w-5 h-5" />}
                 </button>
+              </div>
+            </div>
+
+            {/* Age Group */}
+            <div className="space-y-1.5">
+              <label className="text-sm font-semibold text-zinc-900">Age Group</label>
+              <div className="relative group">
+                <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-400 group-focus-within:text-zinc-900 transition-colors pointer-events-none" strokeWidth={1.5} />
+                <select
+                  name="ageGroup"
+                  value={formData.ageGroup}
+                  onChange={handleChange}
+                  required
+                  className="w-full pl-12 pr-4 py-4 rounded-2xl bg-white border border-zinc-200 text-zinc-900 text-[15px] appearance-none focus:outline-none focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900 transition-all duration-200"
+                >
+                  <option value="" disabled>Select your age group</option>
+                  {AGE_GROUPS.map((group) => (
+                    <option key={group.value} value={group.value}>{group.label}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Digital Confidence */}
+            <div className="space-y-1.5">
+              <label className="text-sm font-semibold text-zinc-900">
+                How confident are you online? <span className="text-zinc-400 font-normal">({formData.digitalConfidence}/5)</span>
+              </label>
+              <div className="relative group flex items-center gap-3 pl-4 pr-4 py-4 rounded-2xl bg-white border border-zinc-200 focus-within:border-zinc-900 focus-within:ring-1 focus-within:ring-zinc-900 transition-all duration-200">
+                <Gauge className="w-5 h-5 text-zinc-400 flex-shrink-0" strokeWidth={1.5} />
+                <input
+                  type="range"
+                  name="digitalConfidence"
+                  min={1}
+                  max={5}
+                  step={1}
+                  value={formData.digitalConfidence}
+                  onChange={handleChange}
+                  className="w-full accent-zinc-900"
+                />
+              </div>
+              <div className="flex justify-between text-xs text-zinc-400 font-medium px-1">
+                <span>Not confident</span>
+                <span>Very confident</span>
               </div>
             </div>
 

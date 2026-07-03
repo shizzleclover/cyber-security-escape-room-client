@@ -9,13 +9,14 @@ interface User {
   email: string;
   ageGroup: string;
   digitalConfidence: number;
+  role: 'user' | 'admin';
 }
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  register: (data: RegisterData) => Promise<void>;
+  login: (email: string, password: string) => Promise<User>;
+  register: (data: RegisterData) => Promise<User>;
   logout: () => Promise<void>;
 }
 
@@ -51,11 +52,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (email: string, password: string) => {
     const response: any = await api.post('/auth/login', { email, password });
     setUser(response.data.user);
+    return response.data.user as User;
   };
 
   const register = async (data: RegisterData) => {
     const response: any = await api.post('/auth/register', data);
     setUser(response.data.user);
+    return response.data.user as User;
   };
 
   const logout = async () => {
