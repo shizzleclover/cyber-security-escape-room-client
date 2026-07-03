@@ -1,0 +1,47 @@
+@import "tailwindcss";
+
+@theme {
+  --color-cyber-bg: #F7F7F8;
+  --color-cyber-card: #FFFFFF;
+
+  --color-primary: #111113;
+  --color-primary-light: #48484E;
+  --color-primary-dark: #000000;
+
+  --color-cyber-emerald: #10B981;
+  --color-cyber-rose: #F43F5E;
+  --color-cyber-amber: #F59E0B;
+
+  --color-cyber-border: rgba(0, 0, 0, 0.08);
+  --color-cyber-text-primary: #111113;
+  --color-cyber-text-secondary: #6B6B70;
+}
+
+/* ============================================
+   CYBERESCAPE – LINEAR/NOTION STRUCTURAL SYSTEM
+   ============================================ */
+
+:root {
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: #F7F7F8;
+  color: #111113;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* Removed conflicting custom resets to fix Tailwind overrides */
