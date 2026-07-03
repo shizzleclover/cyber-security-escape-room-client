@@ -82,22 +82,23 @@ export default function AdminUsersPage() {
     fetchDetail();
   }, [selectedId]);
 
-  const toggleRole = async (u: UserRow) => {
-    const nextRole = u.role === 'admin' ? 'user' : 'admin';
+  const toggleRole = async (id: string, currentRole: 'user' | 'admin', name: string) => {
+    const nextRole = currentRole === 'admin' ? 'user' : 'admin';
     try {
-      await api.patch(`/admin/users/${u.id}/role`, { role: nextRole });
-      setUsers((prev) => prev.map((x) => (x.id === u.id ? { ...x, role: nextRole } : x)));
+      await api.patch(`/admin/users/${id}/role`, { role: nextRole });
+      setUsers((prev) => prev.map((x) => (x.id === id ? { ...x, role: nextRole } : x)));
+      setDetail((prev) => (prev && prev.user._id === id ? { ...prev, user: { ...prev.user, role: nextRole } } : prev));
     } catch (err: any) {
       alert(err.message || 'Could not update role.');
     }
   };
 
-  const deleteUser = async (u: UserRow) => {
-    if (!confirm(`Delete ${u.name}? This removes their account and all progress/scores permanently.`)) return;
+  const deleteUser = async (id: string, name: string) => {
+    if (!confirm(`Delete ${name}? This removes their account and all progress/scores permanently.`)) return;
     try {
-      await api.delete(`/admin/users/${u.id}`);
-      setUsers((prev) => prev.filter((x) => x.id !== u.id));
-      if (selectedId === u.id) setSelectedId(null);
+      await api.delete(`/admin/users/${id}`);
+      setUsers((prev) => prev.filter((x) => x.id !== id));
+      if (selectedId === id) setSelectedId(null);
     } catch (err: any) {
       alert(err.message || 'Could not delete user.');
     }
@@ -275,7 +276,7 @@ export default function AdminUsersPage() {
                     {/* Actions */}
                     <div className="flex gap-3 pt-4 border-t border-zinc-900">
                       <button
-                        onClick={() => toggleRole(detail.user)}
+                        onClick={() => toggleRole(detail.user._id, detail.user.role, detail.user.name)}
                         disabled={detail.user._id === currentAdmin?.id}
                         className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-zinc-800 text-[13px] font-bold hover:bg-zinc-900 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                       >
@@ -286,7 +287,7 @@ export default function AdminUsersPage() {
                         )}
                       </button>
                       <button
-                        onClick={() => deleteUser(detail.user)}
+                        onClick={() => deleteUser(detail.user._id, detail.user.name)}
                         disabled={detail.user._id === currentAdmin?.id}
                         className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-red-900/50 text-red-500 text-[13px] font-bold hover:bg-red-950/30 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                       >
