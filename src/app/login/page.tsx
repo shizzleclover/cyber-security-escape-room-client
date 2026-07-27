@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/features/auth/AuthContext';
+import api from '@/lib/api';
 import { Shield, Mail, Lock, ArrowRight, Eye, EyeOff } from 'lucide-react';
 
 export default function LoginPage() {
@@ -28,7 +29,19 @@ export default function LoginPage() {
 
     try {
       const loggedInUser = await login(formData.email, formData.password);
-      router.push(loggedInUser.role === 'admin' ? '/admin' : '/hub');
+
+      if (loggedInUser.role === 'admin') {
+        router.push('/admin');
+        return;
+      }
+
+      // Regular users who haven't taken the pre-assessment go there first (FR-03).
+      try {
+        const status: any = await api.get('/quiz/status');
+        router.push(status.data?.preCompleted ? '/hub' : '/quiz?type=pre');
+      } catch {
+        router.push('/hub');
+      }
     } catch (err: any) {
       setError(err.message || 'Invalid email or password. Please try again.');
     } finally {

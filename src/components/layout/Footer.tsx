@@ -35,10 +35,10 @@ export default function Footer() {
 
           {/* Project */}
           <div>
-            <h4 className="text-[13px] font-semibold text-zinc-900 mb-3">Legal</h4>
+            <h4 className="text-[13px] font-semibold text-zinc-900 mb-3">More</h4>
             <div className="flex flex-col gap-2">
-              <span className="text-[13px] text-zinc-400">Privacy Policy</span>
-              <span className="text-[13px] text-zinc-400">Terms of Service</span>
+              <Link href="/about" className="text-[13px] text-zinc-500 hover:text-zinc-900 transition-colors">About the Project</Link>
+              <Link href="/resources" className="text-[13px] text-zinc-500 hover:text-zinc-900 transition-colors">Help &amp; Support</Link>
             </div>
           </div>
         </div>

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import ProtectedRoute from '@/features/auth/ProtectedRoute';
+import { useAudio } from '@/features/audio/AudioContext';
 import api from '@/lib/api';
 import { 
   Mail, ShieldCheck, ShieldAlert, Lightbulb, 
@@ -52,6 +53,7 @@ export default function PhishingRoomPage() {
 
 function PhishingRoomContent() {
   const router = useRouter();
+  const { playSound } = useAudio();
   const [emails, setEmails] = useState<Email[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -91,9 +93,11 @@ function PhishingRoomContent() {
       setFeedback(result);
       if (result.correct) {
         setScore((prev) => prev + 1);
+        playSound('correct');
       } else {
         setShake(true);
         setTimeout(() => setShake(false), 500);
+        playSound('wrong');
       }
     } catch {
       // Fallback
@@ -112,6 +116,7 @@ function PhishingRoomContent() {
 
   const handleRoomComplete = async () => {
     const timeSpent = Math.round((Date.now() - startTime) / 1000);
+    playSound('complete');
     setRoomComplete(true);
     try {
       await api.post('/scores', { roomId: 'phishing', score, maxScore: totalEmails, hintsUsed, timeSpent });
@@ -120,7 +125,10 @@ function PhishingRoomContent() {
   };
 
   const handleHint = () => {
-    if (!showHint) setHintsUsed((prev) => prev + 1);
+    if (!showHint) {
+      setHintsUsed((prev) => prev + 1);
+      playSound('hint');
+    }
     setShowHint(true);
   };
 

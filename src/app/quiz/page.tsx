@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, Suspense } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import ProtectedRoute from '@/features/auth/ProtectedRoute';
 import { quizQuestions } from '@/features/quiz/quizData';
+import { useAudio } from '@/features/audio/AudioContext';
 import api from '@/lib/api';
 import { 
   CheckCircle2, XCircle, ArrowRight, Trophy, 
@@ -35,6 +36,7 @@ export default function QuizPage() {
 function QuizContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { playSound } = useAudio();
   const quizType = (searchParams.get('type') as 'pre' | 'post') || 'pre';
 
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -43,10 +45,55 @@ function QuizContent() {
   const [showFeedback, setShowFeedback] = useState(false);
   const [quizComplete, setQuizComplete] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
   const [shake, setShake] = useState(false);
+  const [checking, setChecking] = useState(true);
 
   const currentQuestion = quizQuestions[currentIndex];
   const totalQuestions = quizQuestions.length;
+
+  // Access gate: validate that this quiz type is allowed for this user (FR-03/FR-11).
+  useEffect(() => {
+    const validate = async () => {
+      try {
+        const status: any = await api.get('/quiz/status');
+        const preCompleted = !!status.data?.preCompleted;
+        const postCompleted = !!status.data?.postCompleted;
+
+        if (quizType === 'pre' && preCompleted) {
+          // Already have a baseline — no retakes.
+          router.replace('/hub');
+          return;
+        }
+
+        if (quizType === 'post') {
+          if (!preCompleted) {
+            router.replace('/quiz?type=pre');
+            return;
+          }
+          if (postCompleted) {
+            router.replace('/dashboard');
+            return;
+          }
+          // Post-assessment requires all three rooms completed.
+          const progressRes: any = await api.get('/progress');
+          const progress = progressRes.data?.progress || [];
+          const allComplete =
+            progress.filter((p: any) => p.status === 'completed').length === 3;
+          if (!allComplete) {
+            router.replace('/hub');
+            return;
+          }
+        }
+      } catch {
+        // If validation can't be completed, let the quiz load rather than
+        // trapping the user; the server still enforces one submission per type.
+      } finally {
+        setChecking(false);
+      }
+    };
+    validate();
+  }, [quizType, router]);
 
   const handleSelectOption = (optionIndex: number) => {
     if (showFeedback) return;
@@ -66,7 +113,8 @@ function QuizContent() {
       setShake(true);
       setTimeout(() => setShake(false), 500);
     }
-    
+    playSound(isCorrect ? 'correct' : 'wrong');
+
     setAnswers((prev) => [...prev, answer]);
     setShowFeedback(true);
   };
@@ -77,24 +125,35 @@ function QuizContent() {
       setSelectedOption(null);
       setShowFeedback(false);
     } else {
+      playSound('complete');
       setQuizComplete(true);
     }
   };
 
   const handleSubmitQuiz = async () => {
     setSubmitting(true);
+    setSubmitError('');
     try {
       await api.post('/quiz', { type: quizType, answers });
-    } catch {
-      // Continue regardless
-    } finally {
-      setSubmitting(false);
       router.push(quizType === 'pre' ? '/hub' : '/dashboard');
+    } catch (err: any) {
+      // Surface the failure instead of silently redirecting (was swallowing errors).
+      setSubmitError(err.message || 'We could not save your answers. Please try again.');
+      setSubmitting(false);
     }
   };
 
   const score = answers.filter((a) => a.correct).length;
   const percentage = Math.round((score / totalQuestions) * 100);
+
+  // While validating access, show a spinner rather than flashing the quiz.
+  if (checking) {
+    return (
+      <main className="min-h-screen flex items-center justify-center bg-[#F7F7F8]">
+        <div className="w-10 h-10 border-2 border-zinc-400 border-t-zinc-900 rounded-full animate-spin" />
+      </main>
+    );
+  }
 
   // Results screen
   if (quizComplete) {
@@ -136,6 +195,16 @@ function QuizContent() {
                 : 'Head to your dashboard to see how much you have grown since the pre-assessment.'}
             </p>
 
+            {submitError && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm font-medium"
+              >
+                {submitError}
+              </motion.div>
+            )}
+
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
@@ -143,7 +212,7 @@ function QuizContent() {
               disabled={submitting}
               className="group w-full inline-flex items-center justify-center gap-2 py-4 text-[15px] font-bold text-white rounded-full bg-zinc-900 hover:bg-zinc-800 shadow-sm transition-all duration-300 disabled:opacity-50"
             >
-              {submitting ? 'Saving...' : quizType === 'pre' ? 'Continue to Rooms' : 'View My Results'}
+              {submitting ? 'Saving...' : submitError ? 'Try Again' : quizType === 'pre' ? 'Continue to Rooms' : 'View My Results'}
               <ArrowRight strokeWidth={2} className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </motion.button>
           </div>

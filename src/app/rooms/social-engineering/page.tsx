@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import ProtectedRoute from '@/features/auth/ProtectedRoute';
+import { useAudio } from '@/features/audio/AudioContext';
 import api from '@/lib/api';
 import { 
   Users, ArrowRight, Trophy, CheckCircle2, XCircle,
@@ -58,6 +59,7 @@ export default function SocialEngineeringRoomPage() {
 
 function SocialEngineeringContent() {
   const router = useRouter();
+  const { playSound } = useAudio();
   const [scenarios, setScenarios] = useState<Scenario[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -96,9 +98,11 @@ function SocialEngineeringContent() {
       setFeedback(response.data);
       if (response.data.correct) {
         setScore((prev) => prev + 1);
+        playSound('correct');
       } else {
         setShake(true);
         setTimeout(() => setShake(false), 500);
+        playSound('wrong');
       }
     } catch {}
   };
@@ -115,6 +119,7 @@ function SocialEngineeringContent() {
 
   const handleRoomComplete = async () => {
     const timeSpent = Math.round((Date.now() - startTime) / 1000);
+    playSound('complete');
     setRoomComplete(true);
     try {
       await api.post('/scores', { roomId: 'social-engineering', score, maxScore: totalScenarios, hintsUsed, timeSpent });
@@ -123,7 +128,10 @@ function SocialEngineeringContent() {
   };
 
   const handleHint = () => {
-    if (!showHint) setHintsUsed((prev) => prev + 1);
+    if (!showHint) {
+      setHintsUsed((prev) => prev + 1);
+      playSound('hint');
+    }
     setShowHint(true);
   };
 

@@ -6,10 +6,10 @@ import { motion } from 'framer-motion';
 import { useAuth } from '@/features/auth/AuthContext';
 import ProtectedRoute from '@/features/auth/ProtectedRoute';
 import api from '@/lib/api';
-import { 
-  Trophy, TrendingUp, Target, CheckCircle2, 
+import {
+  Trophy, TrendingUp, Target, CheckCircle2,
   ArrowRight, BookOpen, BarChart3, Sparkles,
-  Mail, Lock, Users, Crown, Medal
+  Mail, Lock, Users, Crown, Medal, Award
 } from 'lucide-react';
 
 const fadeUp = {
@@ -344,6 +344,21 @@ function DashboardContent() {
                       <p className="text-xs text-zinc-400">Measure your improvement</p>
                     </div>
                     <ArrowRight strokeWidth={1.5} className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform" />
+                  </Link>
+                )}
+                {allRoomsComplete && postQuiz && (
+                  <Link
+                    href="/certificate"
+                    className="group flex items-center gap-4 p-5 rounded-xl border border-amber-200 bg-amber-50/70 hover:bg-amber-50 transition-all duration-300 shadow-sm"
+                  >
+                    <div className="w-10 h-10 rounded-lg bg-amber-100 border border-amber-200 flex items-center justify-center">
+                      <Award strokeWidth={1.5} className="w-5 h-5 text-amber-600" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-sm font-semibold text-zinc-900">View Certificate</h3>
+                      <p className="text-xs text-zinc-500">Your completion certificate is ready</p>
+                    </div>
+                    <ArrowRight strokeWidth={1.5} className="w-4 h-4 text-amber-600 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 )}
                 <Link

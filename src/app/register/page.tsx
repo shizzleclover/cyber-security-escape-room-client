@@ -53,7 +53,8 @@ export default function RegisterPage() {
         ageGroup: formData.ageGroup,
         digitalConfidence: Number(formData.digitalConfidence),
       });
-      router.push('/hub');
+      // New users must always take the pre-assessment first (FR-03).
+      router.push('/quiz?type=pre');
     } catch (err: any) {
       setError(err.message || 'Registration failed. Please try again.');
     } finally {

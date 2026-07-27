@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/features/auth/AuthContext';
 import ProtectedRoute from '@/features/auth/ProtectedRoute';
@@ -41,11 +42,24 @@ export default function HubPage() {
 
 function HubContent() {
   const { user } = useAuth();
+  const router = useRouter();
   const [progress, setProgress] = useState<RoomProgressData[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchProgress = async () => {
+    const load = async () => {
+      // Gate: users must complete the pre-assessment before the hub (FR-03).
+      try {
+        const status: any = await api.get('/quiz/status');
+        if (!status.data?.preCompleted) {
+          router.replace('/quiz?type=pre');
+          return;
+        }
+      } catch {
+        // If the status check fails, fall through and let the hub load
+        // rather than trapping the user.
+      }
+
       try {
         const response: any = await api.get('/progress');
         setProgress(response.data?.progress || []);
@@ -55,8 +69,8 @@ function HubContent() {
         setLoading(false);
       }
     };
-    fetchProgress();
-  }, []);
+    load();
+  }, [router]);
 
   const getStatusForRoom = (roomId: string) => {
     const roomProgress = progress.find((p) => p.roomId === roomId);

@@ -52,3 +52,44 @@ body {
 }
 
 /* Removed conflicting custom resets to fix Tailwind overrides */
+
+/* ============================================
+   FONT SCALE — Accessibility toolbar (FR-13)
+   Uses CSS zoom so fixed-px Tailwind values
+   scale proportionally without a full refactor.
+   ============================================ */
+
+html.font-scale-large body {
+  zoom: 1.2;
+}
+
+html.font-scale-xl body {
+  zoom: 1.4;
+}
+
+/* ============================================
+   PRINT — Completion certificate (FR-15)
+   Hide chrome so only the certificate prints.
+   ============================================ */
+
+@media print {
+  header,
+  footer,
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    zoom: 1 !important; /* neutralise font-scale for print */
+    background: #ffffff !important;
+  }
+
+  main {
+    padding-top: 0 !important;
+  }
+
+  .certificate-print-area {
+    box-shadow: none !important;
+    border: 2px solid #111113 !important;
+  }
+}

@@ -4,11 +4,21 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import ProtectedRoute from '@/features/auth/ProtectedRoute';
+import { useAudio } from '@/features/audio/AudioContext';
 import api from '@/lib/api';
-import { 
+import {
   Lock, ArrowRight, Trophy, CheckCircle2, XCircle,
-  KeyRound, ShieldCheck, AlertTriangle, Zap
+  KeyRound, ShieldCheck, AlertTriangle, Zap, Lightbulb
 } from 'lucide-react';
+
+// Hint text for each of the 4 challenges (FR-09). Hints guide without giving
+// away the answer, and never penalise completion.
+const CHALLENGE_HINTS = [
+  'Focus on length, not just symbols. A short password full of symbols is weaker than a long string of plain words. Order them from shortest/most common to longest.',
+  'Aim for 12+ characters and avoid real words on their own. Try stringing 3-4 unrelated words together with a number or symbol.',
+  'The breached password was reused. Any account where you used that same password is now exposed — pick every one that shares it.',
+  'Think about what a password manager removes from your memory. You only ever need to recall a single master password.',
+];
 
 const shakeAnimation = {
   x: [-10, 10, -10, 10, -5, 5, 0],
@@ -603,21 +613,32 @@ export default function PasswordRoomPage() {
 
 function PasswordRoomContent() {
   const router = useRouter();
+  const { playSound } = useAudio();
   const [currentChallenge, setCurrentChallenge] = useState(0);
   const [scores, setScores] = useState<boolean[]>([]);
   const [roomComplete, setRoomComplete] = useState(false);
   const [startTime] = useState(Date.now());
-  const [hintsUsed] = useState(0);
+  const [hintsUsed, setHintsUsed] = useState(0);
+  const [hintVisible, setHintVisible] = useState(false);
 
   const totalChallenges = 4;
 
   const handleChallengeComplete = (correct: boolean) => {
+    playSound(correct ? 'correct' : 'wrong');
     setScores((prev) => [...prev, correct]);
+  };
+
+  const handleRevealHint = () => {
+    if (hintVisible) return;
+    playSound('hint');
+    setHintVisible(true);
+    setHintsUsed((prev) => prev + 1);
   };
 
   const handleNext = () => {
     if (currentChallenge < totalChallenges - 1) {
       setCurrentChallenge((prev) => prev + 1);
+      setHintVisible(false); // fresh hint state for the next challenge
     } else {
       handleRoomComplete();
     }
@@ -626,6 +647,7 @@ function PasswordRoomContent() {
   const handleRoomComplete = async () => {
     const timeSpent = Math.round((Date.now() - startTime) / 1000);
     const score = scores.filter(Boolean).length;
+    playSound('complete');
     setRoomComplete(true);
     try {
       await api.post('/scores', { roomId: 'passwords', score, maxScore: totalChallenges, hintsUsed, timeSpent });
@@ -689,15 +711,30 @@ function PasswordRoomContent() {
       <div className="relative w-full max-w-3xl px-6 py-16">
         {/* Header */}
         <motion.div layout className="mb-8">
-          <div className="flex items-center gap-3 mb-4">
-            <Lock strokeWidth={1.5} className="w-8 h-8 text-zinc-900" />
-            <div>
-              <h1 className="text-2xl font-bold text-zinc-900 tracking-tight">
-                Password Security
-              </h1>
-              <p className="text-[13px] font-medium text-zinc-400 uppercase tracking-wider mt-1">Challenge {currentChallenge + 1} of {totalChallenges}</p>
+          <div className="flex items-start justify-between gap-4 mb-4">
+            <div className="flex items-center gap-3">
+              <Lock strokeWidth={1.5} className="w-8 h-8 text-zinc-900" />
+              <div>
+                <h1 className="text-2xl font-bold text-zinc-900 tracking-tight">
+                  Password Security
+                </h1>
+                <p className="text-[13px] font-medium text-zinc-400 uppercase tracking-wider mt-1">Challenge {currentChallenge + 1} of {totalChallenges}</p>
+              </div>
             </div>
+
+            {/* Hint button (FR-09) — available on every challenge, no penalty */}
+            <motion.button
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={handleRevealHint}
+              disabled={hintVisible}
+              className="flex-shrink-0 inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full border border-amber-200 bg-amber-50 text-amber-700 text-[13px] font-bold hover:bg-amber-100 transition-colors disabled:opacity-50 disabled:cursor-default"
+            >
+              <Lightbulb strokeWidth={2} className="w-4 h-4" />
+              {hintVisible ? 'Hint shown' : 'Need a hint?'}
+            </motion.button>
           </div>
+
           <div className="h-1.5 rounded-full bg-zinc-100 overflow-hidden mt-6">
             <motion.div
               initial={false}
@@ -706,6 +743,25 @@ function PasswordRoomContent() {
               className="h-full rounded-full bg-zinc-900"
             />
           </div>
+
+          {/* Hint panel */}
+          <AnimatePresence>
+            {hintVisible && (
+              <motion.div
+                initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                animate={{ opacity: 1, height: 'auto', marginTop: 16 }}
+                exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                className="overflow-hidden"
+              >
+                <div className="p-4 rounded-2xl border border-amber-200 bg-amber-50 flex items-start gap-3">
+                  <Lightbulb strokeWidth={2} className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                  <p className="text-[14px] text-amber-900 leading-relaxed">
+                    {CHALLENGE_HINTS[currentChallenge]}
+                  </p>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </motion.div>
 
         {/* Challenge Content */}
