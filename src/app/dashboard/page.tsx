@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { useAuth } from '@/features/auth/AuthContext';
 import ProtectedRoute from '@/features/auth/ProtectedRoute';
 import api from '@/lib/api';
+import { getLocalQuiz } from '@/lib/quizLocal';
 import {
   Trophy, TrendingUp, Target, CheckCircle2,
   ArrowRight, BookOpen, BarChart3, Sparkles,
@@ -65,7 +66,23 @@ function DashboardContent() {
           api.get('/scores/leaderboard/top').catch(() => ({ data: { leaderboard: [] } })),
         ]);
         setScores(scoresRes.data?.scores || []);
-        setQuizzes(quizRes.data?.results || []);
+        const results = quizRes.data?.results || [];
+        // If a quiz was just finished but the server save hasn't landed (slow
+        // cold start), merge the local copy so the scoreboard never looks stale.
+        for (const type of ['pre', 'post'] as const) {
+          if (!results.some((q: QuizData) => q.type === type)) {
+            const local = getLocalQuiz(type);
+            if (local) {
+              results.push({
+                type,
+                score: local.score,
+                totalQuestions: local.totalQuestions,
+                completedAt: local.completedAt,
+              });
+            }
+          }
+        }
+        setQuizzes(results);
         setLeaderboard(leaderboardRes.data?.leaderboard || []);
       } catch {
         // Silent fail

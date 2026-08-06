@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 import { useAuth } from '@/features/auth/AuthContext';
 import ProtectedRoute from '@/features/auth/ProtectedRoute';
 import api from '@/lib/api';
+import { getLocalQuiz, markLocalQuizSynced } from '@/lib/quizLocal';
 import { 
   Mail, Lock, Users, ArrowRight, CheckCircle2, 
   Clock, Trophy, Sparkles, Play
@@ -52,8 +53,20 @@ function HubContent() {
       try {
         const status: any = await api.get('/quiz/status');
         if (!status.data?.preCompleted) {
-          router.replace('/quiz?type=pre');
-          return;
+          const local = getLocalQuiz('pre');
+          if (!local) {
+            router.replace('/quiz?type=pre');
+            return;
+          }
+          // The pre-assessment was finished but the server save has not landed
+          // yet (slow cold start). Re-sync best-effort and let the user in
+          // rather than trapping them in a redirect loop.
+          if (!local.synced) {
+            api
+              .post('/quiz', { type: 'pre', answers: local.answers })
+              .then(() => markLocalQuizSynced('pre'))
+              .catch(() => {});
+          }
         }
       } catch {
         // If the status check fails, fall through and let the hub load

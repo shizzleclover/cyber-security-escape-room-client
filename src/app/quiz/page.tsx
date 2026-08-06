@@ -3,10 +3,10 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import ProtectedRoute from '@/features/auth/ProtectedRoute';
 import { quizQuestions } from '@/features/quiz/quizData';
 import { useAudio } from '@/features/audio/AudioContext';
 import api from '@/lib/api';
+import { saveLocalQuiz, markLocalQuizSynced } from '@/lib/quizLocal';
 import { 
   CheckCircle2, XCircle, ArrowRight, Trophy, 
   Brain, Sparkles, Target
@@ -26,9 +26,7 @@ interface Answer {
 export default function QuizPage() {
   return (
     <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-[#F7F7F8]"><div className="w-10 h-10 border-2 border-zinc-400 border-t-zinc-900 rounded-full animate-spin" /></div>}>
-      <ProtectedRoute>
-        <QuizContent />
-      </ProtectedRoute>
+      <QuizContent />
     </Suspense>
   );
 }
@@ -45,14 +43,19 @@ function QuizContent() {
   const [showFeedback, setShowFeedback] = useState(false);
   const [quizComplete, setQuizComplete] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState('');
   const [shake, setShake] = useState(false);
   const [checking, setChecking] = useState(true);
+
+  // Upper bound for the best-effort server save: long enough for a slow
+  // backend to wake, short enough that the button never feels frozen.
+  const SAVE_TIMEOUT_MS = 8000;
 
   const currentQuestion = quizQuestions[currentIndex];
   const totalQuestions = quizQuestions.length;
 
-  // Access gate: validate that this quiz type is allowed for this user (FR-03/FR-11).
+  // Access gate: for signed-in users, validate that this quiz type is allowed
+  // (FR-03/FR-11). Guests can take the pre-assessment freely — the site no longer
+  // requires login — so we only run the server checks when a session cookie is present.
   useEffect(() => {
     const validate = async () => {
       try {
@@ -86,8 +89,8 @@ function QuizContent() {
           }
         }
       } catch {
-        // If validation can't be completed, let the quiz load rather than
-        // trapping the user; the server still enforces one submission per type.
+        // Not signed in (or validation failed) — let the quiz load. Guests are
+        // welcome to take it; the server still enforces one submission per user.
       } finally {
         setChecking(false);
       }
@@ -130,17 +133,32 @@ function QuizContent() {
     }
   };
 
-  const handleSubmitQuiz = async () => {
+  const handleSubmitQuiz = () => {
+    if (submitting) return;
     setSubmitting(true);
-    setSubmitError('');
-    try {
-      await api.post('/quiz', { type: quizType, answers });
-      router.push(quizType === 'pre' ? '/hub' : '/dashboard');
-    } catch (err: any) {
-      // Surface the failure instead of silently redirecting (was swallowing errors).
-      setSubmitError(err.message || 'We could not save your answers. Please try again.');
-      setSubmitting(false);
-    }
+
+    // Persist locally first so the hub/dashboard always reflect this attempt,
+    // even if the server save is slow or gets dropped.
+    saveLocalQuiz(quizType, {
+      score,
+      totalQuestions,
+      answers: answers.map((a) => ({ questionId: a.questionId, selectedAnswer: a.selectedAnswer })),
+    });
+
+    // Best-effort server save. We wait up to SAVE_TIMEOUT_MS so the scoreboard
+    // is not left stale, but never block the navigation forever on a slow
+    // backend wake-up. Guests aren't signed in, so this simply rejects and we
+    // move on. The local record above keeps the flow moving either way.
+    const save = api.post('/quiz', { type: quizType, answers }).then(() => {
+      markLocalQuizSynced(quizType);
+    });
+    const timeout = new Promise((resolve) => setTimeout(resolve, SAVE_TIMEOUT_MS));
+    Promise.race([save, timeout])
+      .catch(() => {})
+      .finally(() => {
+        setSubmitting(false);
+        router.push(quizType === 'pre' ? '/hub' : '/dashboard');
+      });
   };
 
   const score = answers.filter((a) => a.correct).length;
@@ -195,16 +213,6 @@ function QuizContent() {
                 : 'Head to your dashboard to see how much you have grown since the pre-assessment.'}
             </p>
 
-            {submitError && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm font-medium"
-              >
-                {submitError}
-              </motion.div>
-            )}
-
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
@@ -212,7 +220,7 @@ function QuizContent() {
               disabled={submitting}
               className="group w-full inline-flex items-center justify-center gap-2 py-4 text-[15px] font-bold text-white rounded-full bg-zinc-900 hover:bg-zinc-800 shadow-sm transition-all duration-300 disabled:opacity-50"
             >
-              {submitting ? 'Saving...' : submitError ? 'Try Again' : quizType === 'pre' ? 'Continue to Rooms' : 'View My Results'}
+              {submitting ? 'Saving your answers...' : quizType === 'pre' ? 'Continue to Rooms' : 'View My Results'}
               <ArrowRight strokeWidth={2} className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </motion.button>
           </div>
