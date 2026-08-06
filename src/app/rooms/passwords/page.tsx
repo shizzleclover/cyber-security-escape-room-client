@@ -144,12 +144,12 @@ function RankPasswordsChallenge({ onComplete }: { onComplete: (correct: boolean)
               </p>
               <div className="mt-4">
                 <a 
-                  href="https://www.ncsc.gov.uk/collection/passwords" 
+                  href="https://www.ncsc.gov.ie/" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 text-[13px] font-bold text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-full transition-colors"
                 >
-                  NCSC Password Guidance
+                  NCSC Ireland Password Guidance
                   <ArrowRight strokeWidth={2} className="w-3.5 h-3.5" />
                 </a>
               </div>

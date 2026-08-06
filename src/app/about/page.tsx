@@ -105,7 +105,8 @@ export default function AboutPage() {
                   cybersecurity education that speaks their language.
                 </p>
                 <p className="text-zinc-500 leading-relaxed">
-                  In 2024 alone, adults over 60 in the UK lost over £1.2 billion to online fraud. 
+                  In 2024, total payment fraud in Ireland reached €160 million — up 24.5% in a single year — 
+                  and more than one in three Irish adults has experienced fraud or scams. 
                   Traditional cybersecurity training uses jargon, assumes technical knowledge, and fails 
                   to engage this demographic. CyberEscape takes a different approach.
                 </p>
@@ -116,8 +117,8 @@ export default function AboutPage() {
                   <p className="text-xs text-zinc-500">Phishing emails sent daily</p>
                 </div>
                 <div className="p-6 rounded-xl border border-zinc-200/80 bg-white shadow-sm text-center">
-                  <div className="text-2xl font-bold text-amber-600 mb-1">£1.2B</div>
-                  <p className="text-xs text-zinc-500">Lost by UK over-60s in 2024</p>
+                  <div className="text-2xl font-bold text-amber-600 mb-1">€160M</div>
+                  <p className="text-xs text-zinc-500">Lost to payment fraud in Ireland in 2024</p>
                 </div>
                 <div className="p-6 rounded-xl border border-zinc-200/80 bg-white shadow-sm text-center">
                   <div className="text-2xl font-bold text-zinc-700 mb-1">82%</div>

@@ -384,7 +384,7 @@ export default function LandingPage() {
           <div className="space-y-0">
             {[
               { value: '3.4B+', label: 'phishing emails sent every single day' },
-              { value: '£1.2B', label: 'lost to fraud by UK adults over 60 in 2024' },
+              { value: '€160M', label: 'lost to payment fraud in Ireland in 2024' },
               { value: '30 min', label: 'is all it takes to learn the essentials' },
             ].map((s, i) => (
               <div key={i}>
