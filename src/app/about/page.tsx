@@ -293,10 +293,10 @@ export default function AboutPage() {
             </motion.p>
             <motion.div variants={fadeUp} custom={3}>
               <Link
-                href="/register"
+                href="/hub"
                 className="group inline-flex items-center gap-3 px-8 py-4 text-base font-semibold text-white rounded-xl bg-zinc-900 hover:bg-zinc-800 shadow-sm transition-all duration-300"
               >
-                Create Your Account
+                Start Your Training
                 <ArrowRight strokeWidth={1.5} className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
               </Link>
             </motion.div>

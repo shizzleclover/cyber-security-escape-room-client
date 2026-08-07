@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import ProtectedRoute from '@/features/auth/ProtectedRoute';
 import { useAudio } from '@/features/audio/AudioContext';
 import api from '@/lib/api';
+import { saveLocalScore, saveLocalProgress } from '@/lib/progressLocal';
 import { 
   Mail, ShieldCheck, ShieldAlert, Lightbulb, 
   ArrowRight, CheckCircle2, XCircle, AlertTriangle,
@@ -118,6 +119,11 @@ function PhishingRoomContent() {
     const timeSpent = Math.round((Date.now() - startTime) / 1000);
     playSound('complete');
     setRoomComplete(true);
+    
+    // Fallback saves
+    saveLocalScore({ roomId: 'phishing', score, maxScore: totalEmails, hintsUsed, timeSpent });
+    saveLocalProgress('phishing', { status: 'completed', currentStep: totalEmails });
+
     try {
       await api.post('/scores', { roomId: 'phishing', score, maxScore: totalEmails, hintsUsed, timeSpent });
       await api.put('/progress/phishing', { status: 'completed', currentStep: totalEmails });

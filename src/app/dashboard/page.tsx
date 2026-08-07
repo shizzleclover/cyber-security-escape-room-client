@@ -7,6 +7,7 @@ import { useAuth } from '@/features/auth/AuthContext';
 import ProtectedRoute from '@/features/auth/ProtectedRoute';
 import api from '@/lib/api';
 import { getLocalQuiz } from '@/lib/quizLocal';
+import { getLocalScores } from '@/lib/progressLocal';
 import {
   Trophy, TrendingUp, Target, CheckCircle2,
   ArrowRight, BookOpen, BarChart3, Sparkles,
@@ -65,7 +66,13 @@ function DashboardContent() {
           api.get('/quiz').catch(() => ({ data: { results: [] } })),
           api.get('/scores/leaderboard/top').catch(() => ({ data: { leaderboard: [] } })),
         ]);
-        setScores(scoresRes.data?.scores || []);
+        
+        let fetchedScores = scoresRes.data?.scores || [];
+        if (fetchedScores.length === 0) {
+          const localScores = getLocalScores();
+          if (localScores.length > 0) fetchedScores = localScores;
+        }
+        setScores(fetchedScores);
         const results = quizRes.data?.results || [];
         // If a quiz was just finished but the server save hasn't landed (slow
         // cold start), merge the local copy so the scoreboard never looks stale.

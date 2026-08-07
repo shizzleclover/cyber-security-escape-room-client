@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/features/auth/AuthContext';
-import { Shield, Mail, Lock, User, ArrowRight, Eye, EyeOff, Calendar, Gauge } from 'lucide-react';
+import { Shield, Mail, User, ArrowRight, Calendar, Gauge } from 'lucide-react';
 
 const AGE_GROUPS = [
   { value: 'under-60', label: 'Under 60' },
@@ -21,195 +21,163 @@ export default function RegisterPage() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    password: '',
     ageGroup: '',
-    digitalConfidence: '3',
+    digitalConfidence: 3,
   });
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-    if (error) setError('');
-  };
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-
-    if (!formData.ageGroup) {
-      setError('Please select your age group.');
-      return;
-    }
-
     setLoading(true);
 
     try {
       await register({
         name: formData.name,
         email: formData.email,
-        password: formData.password,
+        password: 'NoPassword123!', // Dummy password for the backend
         ageGroup: formData.ageGroup,
-        digitalConfidence: Number(formData.digitalConfidence),
+        digitalConfidence: formData.digitalConfidence,
       });
-      // New users must always take the pre-assessment first (FR-03).
-      router.push('/quiz?type=pre');
+      router.push('/hub');
     } catch (err: any) {
-      setError(err.message || 'Registration failed. Please try again.');
+      setError(err.response?.data?.error || 'Registration failed. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <main className="min-h-screen flex w-full">
+    <main className="min-h-screen bg-zinc-50 flex">
       {/* Left Form Section */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center px-6 lg:px-16 bg-[#F7F7F8]">
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 sm:p-12 lg:p-24 relative z-10">
         <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ type: 'spring', stiffness: 100, damping: 20 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
           className="w-full max-w-md"
         >
-          {/* Header */}
-          <div className="mb-10">
-            <Link href="/" className="inline-flex items-center gap-2 mb-10 group">
-              <Shield strokeWidth={2} className="w-6 h-6 text-zinc-900 group-hover:scale-110 transition-transform" />
-              <span className="text-lg font-bold tracking-tight text-zinc-900">CyberEscape</span>
-            </Link>
-            <h1 className="text-3xl md:text-4xl font-extrabold text-zinc-900 tracking-tight">
-              Create Account
-            </h1>
-            <p className="text-zinc-500 mt-2 text-[15px]">
-              Start your journey to becoming digitally secure today.
-            </p>
-          </div>
+          {/* Logo */}
+          <Link href="/" className="inline-flex items-center gap-2 mb-12 group">
+            <Shield strokeWidth={2} className="w-6 h-6 text-zinc-900 group-hover:scale-110 transition-transform" />
+            <span className="text-lg font-bold tracking-tight text-zinc-900">
+              CyberEscape
+            </span>
+          </Link>
 
-          {/* Form */}
+          {/* Headers */}
+          <h1 className="text-4xl font-extrabold text-zinc-900 mb-3 tracking-tight">
+            Create Account
+          </h1>
+          <p className="text-zinc-500 mb-8 text-[15px]">
+            Start your journey to becoming digitally secure today.
+          </p>
+
+          {error && (
+            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="p-4 mb-6 text-sm text-red-700 bg-red-50 border border-red-200 rounded-xl font-medium">
+              {error}
+            </motion.div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-5">
-            {error && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm font-medium"
-              >
-                {error}
-              </motion.div>
-            )}
-
-            {/* Name */}
-            <div className="space-y-1.5">
-              <label className="text-sm font-semibold text-zinc-900">Full Name</label>
-              <div className="relative group">
-                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-400 group-focus-within:text-zinc-900 transition-colors" strokeWidth={1.5} />
+            {/* Full Name */}
+            <div>
+              <label className="block text-[13px] font-bold text-zinc-900 mb-1.5 ml-1">Full Name</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <User strokeWidth={2} className="h-4 w-4 text-zinc-400" />
+                </div>
                 <input
                   type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  placeholder="Jane Doe"
                   required
-                  className="w-full pl-12 pr-4 py-4 rounded-2xl bg-white border border-zinc-200 text-zinc-900 placeholder:text-zinc-400 text-[15px] focus:outline-none focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900 transition-all duration-200"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  className="block w-full pl-11 pr-4 py-3 bg-white border border-zinc-200 rounded-xl text-[15px] text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent transition-all shadow-sm"
+                  placeholder="Jane Doe"
                 />
               </div>
             </div>
 
-            {/* Email */}
-            <div className="space-y-1.5">
-              <label className="text-sm font-semibold text-zinc-900">Email Address</label>
-              <div className="relative group">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-400 group-focus-within:text-zinc-900 transition-colors" strokeWidth={1.5} />
+            {/* Email Address */}
+            <div>
+              <label className="block text-[13px] font-bold text-zinc-900 mb-1.5 ml-1">Email Address</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <Mail strokeWidth={2} className="h-4 w-4 text-zinc-400" />
+                </div>
                 <input
                   type="email"
-                  name="email"
+                  required
                   value={formData.email}
-                  onChange={handleChange}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  className="block w-full pl-11 pr-4 py-3 bg-white border border-zinc-200 rounded-xl text-[15px] text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent transition-all shadow-sm"
                   placeholder="name@example.com"
-                  required
-                  className="w-full pl-12 pr-4 py-4 rounded-2xl bg-white border border-zinc-200 text-zinc-900 placeholder:text-zinc-400 text-[15px] focus:outline-none focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900 transition-all duration-200"
                 />
-              </div>
-            </div>
-
-            {/* Password */}
-            <div className="space-y-1.5">
-              <label className="text-sm font-semibold text-zinc-900">Password</label>
-              <div className="relative group">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-400 group-focus-within:text-zinc-900 transition-colors" strokeWidth={1.5} />
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  placeholder="••••••••"
-                  required
-                  className="w-full pl-12 pr-12 py-4 rounded-2xl bg-white border border-zinc-200 text-zinc-900 placeholder:text-zinc-400 text-[15px] focus:outline-none focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900 transition-all duration-200"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-900 transition-colors"
-                >
-                  {showPassword ? <EyeOff strokeWidth={1.5} className="w-5 h-5" /> : <Eye strokeWidth={1.5} className="w-5 h-5" />}
-                </button>
               </div>
             </div>
 
             {/* Age Group */}
-            <div className="space-y-1.5">
-              <label className="text-sm font-semibold text-zinc-900">Age Group</label>
-              <div className="relative group">
-                <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-400 group-focus-within:text-zinc-900 transition-colors pointer-events-none" strokeWidth={1.5} />
+            <div>
+              <label className="block text-[13px] font-bold text-zinc-900 mb-1.5 ml-1">Age Group</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <Calendar strokeWidth={2} className="h-4 w-4 text-zinc-400" />
+                </div>
                 <select
-                  name="ageGroup"
-                  value={formData.ageGroup}
-                  onChange={handleChange}
                   required
-                  className="w-full pl-12 pr-4 py-4 rounded-2xl bg-white border border-zinc-200 text-zinc-900 text-[15px] appearance-none focus:outline-none focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900 transition-all duration-200"
+                  value={formData.ageGroup}
+                  onChange={(e) => setFormData({ ...formData, ageGroup: e.target.value })}
+                  className="block w-full pl-11 pr-10 py-3 bg-white border border-zinc-200 rounded-xl text-[15px] text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent transition-all shadow-sm appearance-none cursor-pointer"
                 >
                   <option value="" disabled>Select your age group</option>
-                  {AGE_GROUPS.map((group) => (
+                  {AGE_GROUPS.map(group => (
                     <option key={group.value} value={group.value}>{group.label}</option>
                   ))}
                 </select>
+                <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                  <svg className="h-4 w-4 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
               </div>
             </div>
 
             {/* Digital Confidence */}
-            <div className="space-y-1.5">
-              <label className="text-sm font-semibold text-zinc-900">
-                How confident are you online? <span className="text-zinc-400 font-normal">({formData.digitalConfidence}/5)</span>
+            <div>
+              <label className="block text-[13px] font-bold text-zinc-900 mb-1.5 ml-1">
+                How confident are you online? <span className="text-zinc-400 font-medium">({formData.digitalConfidence}/5)</span>
               </label>
-              <div className="relative group flex items-center gap-3 pl-4 pr-4 py-4 rounded-2xl bg-white border border-zinc-200 focus-within:border-zinc-900 focus-within:ring-1 focus-within:ring-zinc-900 transition-all duration-200">
-                <Gauge className="w-5 h-5 text-zinc-400 flex-shrink-0" strokeWidth={1.5} />
+              <div className="relative pt-2 pb-6 px-1">
+                <div className="absolute -top-1 left-0 flex items-center pointer-events-none opacity-50">
+                  <Gauge strokeWidth={2} className="h-3.5 w-3.5 text-zinc-500" />
+                </div>
                 <input
                   type="range"
-                  name="digitalConfidence"
-                  min={1}
-                  max={5}
-                  step={1}
+                  min="1"
+                  max="5"
+                  step="1"
                   value={formData.digitalConfidence}
-                  onChange={handleChange}
-                  className="w-full accent-zinc-900"
+                  onChange={(e) => setFormData({ ...formData, digitalConfidence: parseInt(e.target.value) })}
+                  className="w-full h-2 bg-zinc-200 rounded-lg appearance-none cursor-pointer accent-zinc-900"
                 />
-              </div>
-              <div className="flex justify-between text-xs text-zinc-400 font-medium px-1">
-                <span>Not confident</span>
-                <span>Very confident</span>
+                <div className="flex justify-between text-[11px] font-bold text-zinc-400 uppercase tracking-wider mt-2">
+                  <span>Not confident</span>
+                  <span>Very confident</span>
+                </div>
               </div>
             </div>
 
-            {/* Submit */}
+            {/* Submit Button */}
             <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+              whileHover={{ scale: 1.01 }}
+              whileTap={{ scale: 0.99 }}
               type="submit"
               disabled={loading}
-              className="w-full flex items-center justify-center gap-2 py-4 mt-2 rounded-full bg-zinc-900 text-white font-bold text-[15px] shadow-sm hover:shadow-md hover:bg-zinc-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full flex items-center justify-center gap-2 py-4 bg-zinc-900 text-white rounded-xl text-[15px] font-bold shadow-md hover:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-zinc-900 transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-2"
             >
               {loading ? (
-                <div className="w-5 h-5 border-2 border-zinc-400 border-t-white rounded-full animate-spin" />
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               ) : (
                 <>
                   Create Account
@@ -223,7 +191,7 @@ export default function RegisterPage() {
           <p className="text-left text-[15px] text-zinc-500 mt-8">
             Already have an account?{' '}
             <Link href="/login" className="text-zinc-900 font-bold hover:underline transition-all">
-              Sign in here.
+              Log in here.
             </Link>
           </p>
         </motion.div>
@@ -231,35 +199,27 @@ export default function RegisterPage() {
 
       {/* Right Interactive Section (Desktop Only) */}
       <div className="hidden lg:flex w-1/2 bg-zinc-900 p-12 items-center justify-center relative overflow-hidden">
-        {/* Animated Background Elements */}
         <motion.div
-          animate={{ rotate: -360 }}
-          transition={{ duration: 60, repeat: Infinity, ease: 'linear' }}
+          animate={{ rotate: 360 }}
+          transition={{ duration: 50, repeat: Infinity, ease: 'linear' }}
           className="absolute -top-1/2 -right-1/2 w-[800px] h-[800px] border-[40px] border-zinc-800/50 rounded-full opacity-20"
         />
         <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 80, repeat: Infinity, ease: 'linear' }}
-          className="absolute -bottom-1/2 -left-1/2 w-[600px] h-[600px] border-[30px] border-zinc-800/50 rounded-full opacity-20"
+          animate={{ rotate: -360 }}
+          transition={{ duration: 70, repeat: Infinity, ease: 'linear' }}
+          className="absolute -bottom-1/2 -left-1/2 w-[600px] h-[600px] border-[30px] border-zinc-800/30 rounded-full opacity-20"
         />
         
         <div className="relative z-10 max-w-lg">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, type: 'spring', stiffness: 100 }}
-            className="space-y-6 text-white"
-          >
-            <div className="w-16 h-16 rounded-2xl bg-zinc-800 flex items-center justify-center border border-zinc-700">
-              <Shield strokeWidth={1.5} className="w-8 h-8 text-amber-400" />
-            </div>
-            <h2 className="text-4xl font-extrabold tracking-tight leading-tight">
-              Your security <br/>starts here.
-            </h2>
-            <p className="text-lg text-zinc-400 leading-relaxed">
-              Join thousands of users who are building their digital confidence through our immersive, hands-on escape rooms.
-            </p>
+          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.2 }} className="w-16 h-16 bg-zinc-800 rounded-2xl flex items-center justify-center mb-8 border border-zinc-700/50 shadow-2xl">
+            <Shield strokeWidth={1.5} className="w-8 h-8 text-emerald-400" />
           </motion.div>
+          <motion.h2 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="text-4xl font-bold text-white mb-6 leading-tight">
+            Your security<br />starts here.
+          </motion.h2>
+          <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="text-lg text-zinc-400 leading-relaxed font-medium">
+            Join thousands of users who are building their digital confidence through our immersive, hands-on escape rooms.
+          </motion.p>
         </div>
       </div>
     </main>

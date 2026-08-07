@@ -134,7 +134,7 @@ function ShieldBuddy({ size = 200 }: { size?: number }) {
 
 export default function LandingPage() {
   const { user } = useAuth();
-  const startHref = user ? '/hub' : '/register';
+  const startHref = '/register';
 
   // Hero scroll choreography
   const heroRef = useRef<HTMLDivElement>(null);
@@ -202,17 +202,9 @@ export default function LandingPage() {
                     href={startHref}
                     className="group inline-flex items-center justify-center gap-3 px-8 py-4 text-[15px] font-bold text-[#FAFAF8] bg-[#101010] rounded-full hover:bg-[#2a2a2a] transition-colors duration-300"
                   >
-                    {user ? 'Continue learning' : 'Start free'}
+                    Start free
                     <ArrowRight strokeWidth={2} className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
                   </Link>
-                  {!user && (
-                    <Link
-                      href="/login"
-                      className="inline-flex items-center justify-center gap-2 px-8 py-4 text-[15px] font-bold text-zinc-700 rounded-full border border-zinc-300 hover:border-zinc-900 transition-colors duration-300"
-                    >
-                      Sign in
-                    </Link>
-                  )}
                 </Reveal>
               </div>
             </div>
@@ -426,7 +418,7 @@ export default function LandingPage() {
               className="group inline-flex items-center justify-center gap-3 px-12 py-5 text-[16px] font-bold text-[#101010] rounded-full transition-transform duration-300 hover:scale-[1.03]"
               style={{ backgroundColor: ACCENT }}
             >
-              {user ? 'Continue learning' : 'Start now — it’s free'}
+              Start now — it’s free
               <ArrowRight strokeWidth={2.5} className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
             </Link>
           </Reveal>

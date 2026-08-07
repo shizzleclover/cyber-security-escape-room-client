@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import api from '@/lib/api';
 import {
-  Users, Mail, Lock, TrendingUp, Sparkles, ArrowUpRight,
+  Users, Mail, Lock, TrendingUp, Sparkles, ArrowUpRight, CheckCircle2, Target
 } from 'lucide-react';
 
 const ACCENT = '#58CC02';
@@ -17,6 +17,8 @@ interface Overview {
   quizzesTaken: { pre: number; post: number };
   avgLearningGain: number | null;
   recentUsers: { _id: string; name: string; email: string; ageGroup: string; createdAt: string }[];
+  totalCompletedCourses: number;
+  overallCompletionRate: number;
 }
 
 const ROOM_LABELS: Record<string, string> = {
@@ -63,8 +65,8 @@ export default function AdminOverviewPage() {
 
   const statCards = [
     { label: 'Total learners', value: overview.totalUsers, icon: Users },
-    { label: 'Pre-assessments taken', value: overview.quizzesTaken.pre, icon: Sparkles },
-    { label: 'Post-assessments taken', value: overview.quizzesTaken.post, icon: TrendingUp },
+    { label: 'Completed courses', value: overview.totalCompletedCourses, icon: CheckCircle2 },
+    { label: 'Completion rate', value: `${overview.overallCompletionRate}%`, icon: Target },
     {
       label: 'Avg. learning gain',
       value: overview.avgLearningGain !== null ? `${overview.avgLearningGain > 0 ? '+' : ''}${overview.avgLearningGain}%` : '—',

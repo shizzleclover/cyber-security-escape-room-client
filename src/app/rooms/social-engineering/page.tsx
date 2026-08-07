@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import ProtectedRoute from '@/features/auth/ProtectedRoute';
 import { useAudio } from '@/features/audio/AudioContext';
 import api from '@/lib/api';
+import { saveLocalScore, saveLocalProgress } from '@/lib/progressLocal';
 import { 
   Users, ArrowRight, Trophy, CheckCircle2, XCircle,
   Lightbulb, AlertTriangle, Phone, MessageSquare, Shield
@@ -121,6 +122,11 @@ function SocialEngineeringContent() {
     const timeSpent = Math.round((Date.now() - startTime) / 1000);
     playSound('complete');
     setRoomComplete(true);
+    
+    // Fallback saves
+    saveLocalScore({ roomId: 'social-engineering', score, maxScore: totalScenarios, hintsUsed, timeSpent });
+    saveLocalProgress('social-engineering', { status: 'completed', currentStep: totalScenarios });
+
     try {
       await api.post('/scores', { roomId: 'social-engineering', score, maxScore: totalScenarios, hintsUsed, timeSpent });
       await api.put('/progress/social-engineering', { status: 'completed', currentStep: totalScenarios });

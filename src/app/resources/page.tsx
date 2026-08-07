@@ -56,9 +56,47 @@ export default function ResourcesPage() {
     const fetchResources = async () => {
       try {
         const response: any = await api.get('/resources');
-        setResources(response.data.resources);
+        if (response.data.resources && response.data.resources.length > 0) {
+          setResources(response.data.resources);
+        } else {
+          throw new Error('Empty resources');
+        }
       } catch {
-        setResources([]);
+        // Hardcoded fallback if backend is down or DB is unseeded
+        setResources([
+          {
+            _id: 'fallback-1',
+            category: 'Reporting Fraud',
+            title: 'Garda National Economic Crime Bureau',
+            description: 'Report fraud, scams, and cybercrime directly to An Garda Síochána.',
+            url: 'https://www.garda.ie/en/crime/fraud/',
+            icon: 'AlertTriangle'
+          },
+          {
+            _id: 'fallback-2',
+            category: 'Learning More',
+            title: 'NCSC Ireland',
+            description: 'The National Cyber Security Centre provides guidance for individuals and businesses in Ireland.',
+            url: 'https://www.ncsc.gov.ie/',
+            icon: 'Shield'
+          },
+          {
+            _id: 'fallback-3',
+            category: 'Learning More',
+            title: 'FraudSMART',
+            description: 'An initiative by the Banking & Payments Federation Ireland to protect consumers from financial fraud.',
+            url: 'https://www.fraudsmart.ie/',
+            icon: 'Landmark'
+          },
+          {
+            _id: 'fallback-4',
+            category: 'Password Tools',
+            title: 'Bitwarden',
+            description: 'A highly recommended, free, and secure password manager for all your devices.',
+            url: 'https://bitwarden.com/',
+            icon: 'Lock'
+          }
+        ]);
       } finally {
         setLoading(false);
       }

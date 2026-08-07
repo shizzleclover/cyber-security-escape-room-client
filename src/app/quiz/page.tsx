@@ -46,10 +46,6 @@ function QuizContent() {
   const [shake, setShake] = useState(false);
   const [checking, setChecking] = useState(true);
 
-  // Upper bound for the best-effort server save: long enough for a slow
-  // backend to wake, short enough that the button never feels frozen.
-  const SAVE_TIMEOUT_MS = 8000;
-
   const currentQuestion = quizQuestions[currentIndex];
   const totalQuestions = quizQuestions.length;
 
@@ -137,28 +133,20 @@ function QuizContent() {
     if (submitting) return;
     setSubmitting(true);
 
-    // Persist locally first so the hub/dashboard always reflect this attempt,
-    // even if the server save is slow or gets dropped.
+    // Persist locally first so the hub/dashboard always reflect this attempt.
     saveLocalQuiz(quizType, {
       score,
       totalQuestions,
       answers: answers.map((a) => ({ questionId: a.questionId, selectedAnswer: a.selectedAnswer })),
     });
 
-    // Best-effort server save. We wait up to SAVE_TIMEOUT_MS so the scoreboard
-    // is not left stale, but never block the navigation forever on a slow
-    // backend wake-up. Guests aren't signed in, so this simply rejects and we
-    // move on. The local record above keeps the flow moving either way.
-    const save = api.post('/quiz', { type: quizType, answers }).then(() => {
-      markLocalQuizSynced(quizType);
-    });
-    const timeout = new Promise((resolve) => setTimeout(resolve, SAVE_TIMEOUT_MS));
-    Promise.race([save, timeout])
-      .catch(() => {})
-      .finally(() => {
-        setSubmitting(false);
-        router.push(quizType === 'pre' ? '/hub' : '/dashboard');
-      });
+    // Fire and forget server save. Don't block navigation!
+    api.post('/quiz', { type: quizType, answers })
+      .then(() => markLocalQuizSynced(quizType))
+      .catch(() => {});
+
+    // Navigate immediately so it feels instant
+    router.push(quizType === 'pre' ? '/hub' : '/dashboard');
   };
 
   const score = answers.filter((a) => a.correct).length;

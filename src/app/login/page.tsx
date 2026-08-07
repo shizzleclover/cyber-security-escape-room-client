@@ -5,22 +5,18 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/features/auth/AuthContext';
-import api from '@/lib/api';
-import { Shield, Mail, Lock, ArrowRight, Eye, EyeOff } from 'lucide-react';
+import { Shield, Mail, ArrowRight } from 'lucide-react';
 
 export default function LoginPage() {
   const { login } = useAuth();
   const router = useRouter();
 
-  const [formData, setFormData] = useState({ email: '', password: '' });
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
+  const [formData, setFormData] = useState({
+    email: '',
+  });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-    if (error) setError('');
-  };
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,114 +24,75 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const loggedInUser = await login(formData.email, formData.password);
-
-      if (loggedInUser.role === 'admin') {
-        router.push('/admin');
-        return;
-      }
-
-      // Regular users who haven't taken the pre-assessment go there first (FR-03).
-      try {
-        const status: any = await api.get('/quiz/status');
-        router.push(status.data?.preCompleted ? '/hub' : '/quiz?type=pre');
-      } catch {
-        router.push('/hub');
-      }
+      await login(formData.email, 'NoPassword123!');
+      router.push('/hub');
     } catch (err: any) {
-      setError(err.message || 'Invalid email or password. Please try again.');
+      setError(err.response?.data?.error || 'Invalid credentials.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <main className="min-h-screen flex w-full">
+    <main className="min-h-screen bg-zinc-50 flex">
       {/* Left Form Section */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center px-6 lg:px-16 bg-[#F7F7F8]">
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 sm:p-12 lg:p-24 relative z-10">
         <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ type: 'spring', stiffness: 100, damping: 20 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
           className="w-full max-w-md"
         >
-          {/* Header */}
-          <div className="mb-10">
-            <Link href="/" className="inline-flex items-center gap-2 mb-10 group">
-              <Shield strokeWidth={2} className="w-6 h-6 text-zinc-900 group-hover:scale-110 transition-transform" />
-              <span className="text-lg font-bold tracking-tight text-zinc-900">CyberEscape</span>
-            </Link>
-            <h1 className="text-3xl md:text-4xl font-extrabold text-zinc-900 tracking-tight">
-              Welcome Back
-            </h1>
-            <p className="text-zinc-500 mt-2 text-[15px]">
-              Sign in to continue your cybersecurity training.
-            </p>
-          </div>
+          {/* Logo */}
+          <Link href="/" className="inline-flex items-center gap-2 mb-12 group">
+            <Shield strokeWidth={2} className="w-6 h-6 text-zinc-900 group-hover:scale-110 transition-transform" />
+            <span className="text-lg font-bold tracking-tight text-zinc-900">
+              CyberEscape
+            </span>
+          </Link>
 
-          {/* Form */}
+          {/* Headers */}
+          <h1 className="text-4xl font-extrabold text-zinc-900 mb-3 tracking-tight">
+            Welcome Back
+          </h1>
+          <p className="text-zinc-500 mb-8 text-[15px]">
+            Continue your training and improve your digital security skills.
+          </p>
+
+          {error && (
+            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="p-4 mb-6 text-sm text-red-700 bg-red-50 border border-red-200 rounded-xl font-medium">
+              {error}
+            </motion.div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-5">
-            {error && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm font-medium"
-              >
-                {error}
-              </motion.div>
-            )}
-
-            {/* Email */}
-            <div className="space-y-1.5">
-              <label className="text-sm font-semibold text-zinc-900">Email Address</label>
-              <div className="relative group">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-400 group-focus-within:text-zinc-900 transition-colors" strokeWidth={1.5} />
+            {/* Email Address */}
+            <div>
+              <label className="block text-[13px] font-bold text-zinc-900 mb-1.5 ml-1">Email Address</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <Mail strokeWidth={2} className="h-4 w-4 text-zinc-400" />
+                </div>
                 <input
                   type="email"
-                  name="email"
+                  required
                   value={formData.email}
-                  onChange={handleChange}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  className="block w-full pl-11 pr-4 py-3 bg-white border border-zinc-200 rounded-xl text-[15px] text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent transition-all shadow-sm"
                   placeholder="name@example.com"
-                  required
-                  className="w-full pl-12 pr-4 py-4 rounded-2xl bg-white border border-zinc-200 text-zinc-900 placeholder:text-zinc-400 text-[15px] focus:outline-none focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900 transition-all duration-200"
                 />
               </div>
             </div>
 
-            {/* Password */}
-            <div className="space-y-1.5">
-              <label className="text-sm font-semibold text-zinc-900">Password</label>
-              <div className="relative group">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-400 group-focus-within:text-zinc-900 transition-colors" strokeWidth={1.5} />
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  placeholder="••••••••"
-                  required
-                  className="w-full pl-12 pr-12 py-4 rounded-2xl bg-white border border-zinc-200 text-zinc-900 placeholder:text-zinc-400 text-[15px] focus:outline-none focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900 transition-all duration-200"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-900 transition-colors"
-                >
-                  {showPassword ? <EyeOff strokeWidth={1.5} className="w-5 h-5" /> : <Eye strokeWidth={1.5} className="w-5 h-5" />}
-                </button>
-              </div>
-            </div>
-
-            {/* Submit */}
+            {/* Submit Button */}
             <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+              whileHover={{ scale: 1.01 }}
+              whileTap={{ scale: 0.99 }}
               type="submit"
               disabled={loading}
-              className="w-full flex items-center justify-center gap-2 py-4 mt-2 rounded-full bg-zinc-900 text-white font-bold text-[15px] shadow-sm hover:shadow-md hover:bg-zinc-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full flex items-center justify-center gap-2 py-4 bg-zinc-900 text-white rounded-xl text-[15px] font-bold shadow-md hover:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-zinc-900 transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-2"
             >
               {loading ? (
-                <div className="w-5 h-5 border-2 border-zinc-400 border-t-white rounded-full animate-spin" />
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               ) : (
                 <>
                   Sign In
@@ -166,26 +123,19 @@ export default function LoginPage() {
         <motion.div
           animate={{ rotate: -360 }}
           transition={{ duration: 70, repeat: Infinity, ease: 'linear' }}
-          className="absolute -bottom-1/2 -left-1/2 w-[600px] h-[600px] border-[30px] border-zinc-800/50 rounded-full opacity-20"
+          className="absolute -bottom-1/2 -left-1/2 w-[600px] h-[600px] border-[30px] border-zinc-800/30 rounded-full opacity-20"
         />
         
         <div className="relative z-10 max-w-lg">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, type: 'spring', stiffness: 100 }}
-            className="space-y-6 text-white"
-          >
-            <div className="w-16 h-16 rounded-2xl bg-zinc-800 flex items-center justify-center border border-zinc-700">
-              <Shield strokeWidth={1.5} className="w-8 h-8 text-emerald-400" />
-            </div>
-            <h2 className="text-4xl font-extrabold tracking-tight leading-tight">
-              Master the art of <br/>digital defense.
-            </h2>
-            <p className="text-lg text-zinc-400 leading-relaxed">
-              Step into interactive escape rooms designed to build real-world cybersecurity skills. Detect phishing, secure accounts, and learn social engineering tactics.
-            </p>
+          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.2 }} className="w-16 h-16 bg-zinc-800 rounded-2xl flex items-center justify-center mb-8 border border-zinc-700/50 shadow-2xl">
+            <Shield strokeWidth={1.5} className="w-8 h-8 text-emerald-400" />
           </motion.div>
+          <motion.h2 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="text-4xl font-bold text-white mb-6 leading-tight">
+            Continue your<br />training.
+          </motion.h2>
+          <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="text-lg text-zinc-400 leading-relaxed font-medium">
+            Jump back into the escape rooms and continue sharpening your cybersecurity skills.
+          </motion.p>
         </div>
       </div>
     </main>

@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import ProtectedRoute from '@/features/auth/ProtectedRoute';
 import { useAudio } from '@/features/audio/AudioContext';
 import api from '@/lib/api';
+import { saveLocalScore, saveLocalProgress } from '@/lib/progressLocal';
 import {
   Lock, ArrowRight, Trophy, CheckCircle2, XCircle,
   KeyRound, ShieldCheck, AlertTriangle, Zap, Lightbulb
@@ -649,6 +650,11 @@ function PasswordRoomContent() {
     const score = scores.filter(Boolean).length;
     playSound('complete');
     setRoomComplete(true);
+    
+    // Fallback saves
+    saveLocalScore({ roomId: 'passwords', score, maxScore: totalChallenges, hintsUsed, timeSpent });
+    saveLocalProgress('passwords', { status: 'completed', currentStep: totalChallenges });
+
     try {
       await api.post('/scores', { roomId: 'passwords', score, maxScore: totalChallenges, hintsUsed, timeSpent });
       await api.put('/progress/passwords', { status: 'completed', currentStep: totalChallenges });

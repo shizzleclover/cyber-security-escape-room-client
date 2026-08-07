@@ -54,17 +54,40 @@ body {
 /* Removed conflicting custom resets to fix Tailwind overrides */
 
 /* ============================================
-   FONT SCALE — Accessibility toolbar (FR-13)
-   Uses CSS zoom so fixed-px Tailwind values
-   scale proportionally without a full refactor.
+   ACCESSIBILITY
    ============================================ */
 
-html.font-scale-large body {
-  zoom: 1.2;
+/* High Contrast Mode */
+html.high-contrast body {
+  background-color: #000000 !important;
+  color: #FFFF00 !important;
 }
 
-html.font-scale-xl body {
-  zoom: 1.4;
+html.high-contrast * {
+  border-color: #FFFF00 !important;
+}
+
+html.high-contrast .bg-white,
+html.high-contrast .bg-zinc-50,
+html.high-contrast .bg-zinc-100,
+html.high-contrast .bg-zinc-900 {
+  background-color: #000000 !important;
+  color: #FFFF00 !important;
+}
+
+html.high-contrast .text-zinc-500,
+html.high-contrast .text-zinc-400,
+html.high-contrast .text-zinc-600,
+html.high-contrast .text-zinc-900 {
+  color: #FFFF00 !important;
+}
+
+/* Reduced Motion Mode (CSS fallbacks for non-framer animations) */
+html.reduce-motion * {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
 }
 
 /* ============================================

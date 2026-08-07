@@ -2,13 +2,11 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Settings, Type, ZoomIn, ZoomOut, Contrast, Play, Pause, X, Volume2, VolumeX } from 'lucide-react';
-import { useAccessibility } from '@/features/accessibility/AccessibilityContext';
-import { useAudio } from '@/features/audio/AudioContext';
+import { Settings, Type, ZoomIn, ZoomOut, Contrast, Play, Pause, X } from 'lucide-react';
+import { useAccessibility } from './AccessibilityContext';
 
-export default function AccessibilityToolbar() {
+export function AccessibilityWidget() {
   const [isOpen, setIsOpen] = useState(false);
-  const { soundEnabled, toggleSound, playSound } = useAudio();
   const {
     textSizeMultiplier,
     increaseTextSize,
@@ -23,11 +21,10 @@ export default function AccessibilityToolbar() {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 z-50 flex items-center justify-center gap-2 px-5 h-14 bg-zinc-900 text-white rounded-full shadow-lg hover:bg-zinc-800 transition-colors"
+        className="fixed bottom-6 right-6 z-50 flex items-center justify-center w-14 h-14 bg-zinc-900 text-white rounded-full shadow-lg hover:bg-zinc-800 transition-colors"
         aria-label="Accessibility Options"
       >
-        <Settings className="w-5 h-5" />
-        <span className="font-bold text-[15px]">Accessibility</span>
+        <Settings className="w-6 h-6" />
       </button>
 
       <AnimatePresence>
@@ -114,28 +111,6 @@ export default function AccessibilityToolbar() {
                     </div>
                     <div className={`w-10 h-6 rounded-full p-1 transition-colors ${reduceMotion ? 'bg-emerald-500' : 'bg-zinc-200'}`}>
                       <div className={`w-4 h-4 rounded-full bg-white transition-transform ${reduceMotion ? 'translate-x-4' : 'translate-x-0'}`} />
-                    </div>
-                  </button>
-                  
-                  <button
-                    onClick={() => {
-                      const wasEnabled = soundEnabled;
-                      toggleSound();
-                      if (!wasEnabled) playSound('correct');
-                    }}
-                    className="w-full flex items-center justify-between p-3 rounded-xl border transition-colors group bg-white"
-                    style={{ borderColor: soundEnabled ? '#10B981' : '#E5E7EB', backgroundColor: soundEnabled ? '#ECFDF5' : '#FFFFFF' }}
-                  >
-                    <div className="flex items-center gap-3">
-                      {soundEnabled ? (
-                        <Volume2 className="w-5 h-5 text-emerald-600" />
-                      ) : (
-                        <VolumeX className="w-5 h-5 text-zinc-500 group-hover:text-zinc-900" />
-                      )}
-                      <span className={`font-medium ${soundEnabled ? 'text-emerald-900' : 'text-zinc-700'}`}>Sound Effects</span>
-                    </div>
-                    <div className={`w-10 h-6 rounded-full p-1 transition-colors ${soundEnabled ? 'bg-emerald-500' : 'bg-zinc-200'}`}>
-                      <div className={`w-4 h-4 rounded-full bg-white transition-transform ${soundEnabled ? 'translate-x-4' : 'translate-x-0'}`} />
                     </div>
                   </button>
                 </div>
