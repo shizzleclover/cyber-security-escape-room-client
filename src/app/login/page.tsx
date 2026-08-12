@@ -27,7 +27,8 @@ export default function LoginPage() {
       await login(formData.email, 'NoPassword123!');
       router.push('/hub');
     } catch (err: any) {
-      setError(err.response?.data?.error || 'Invalid credentials.');
+      // api.ts rejects with a plain Error(message); there is no err.response here.
+      setError(err.message || 'Invalid credentials.');
     } finally {
       setLoading(false);
     }

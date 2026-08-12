@@ -43,7 +43,8 @@ export default function RegisterPage() {
       });
       router.push('/hub');
     } catch (err: any) {
-      setError(err.response?.data?.error || 'Registration failed. Please try again.');
+      // api.ts rejects with a plain Error(message); there is no err.response here.
+      setError(err.message || 'Registration failed. Please try again.');
     } finally {
       setLoading(false);
     }
