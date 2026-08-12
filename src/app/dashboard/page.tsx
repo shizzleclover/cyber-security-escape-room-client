@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/features/auth/AuthContext';
-import ProtectedRoute from '@/features/auth/ProtectedRoute';
 import api from '@/lib/api';
 import { getLocalQuiz } from '@/lib/quizLocal';
 import { getLocalScores } from '@/lib/progressLocal';
@@ -44,11 +43,7 @@ interface QuizData {
 }
 
 export default function DashboardPage() {
-  return (
-    <ProtectedRoute>
-      <DashboardContent />
-    </ProtectedRoute>
-  );
+  return <DashboardContent />;
 }
 
 function DashboardContent() {

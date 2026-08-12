@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/features/auth/AuthContext';
-import ProtectedRoute from '@/features/auth/ProtectedRoute';
 import api from '@/lib/api';
 import { Shield, Award, Printer, ArrowLeft } from 'lucide-react';
 
@@ -16,11 +15,7 @@ const ROOM_NAMES: Record<string, string> = {
 };
 
 export default function CertificatePage() {
-  return (
-    <ProtectedRoute>
-      <CertificateContent />
-    </ProtectedRoute>
-  );
+  return <CertificateContent />;
 }
 
 function CertificateContent() {

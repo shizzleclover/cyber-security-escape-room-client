@@ -3,9 +3,9 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/features/auth/AuthContext';
-import ProtectedRoute from '@/features/auth/ProtectedRoute';
 import api from '@/lib/api';
-import { 
+import { getLocalScores } from '@/lib/progressLocal';
+import {
   User, Shield, Mail, Lock, Users, Trophy, 
   Award, Sparkles, Star, Zap
 } from 'lucide-react';
@@ -24,11 +24,7 @@ const stagger = {
 };
 
 export default function ProfilePage() {
-  return (
-    <ProtectedRoute>
-      <ProfileContent />
-    </ProtectedRoute>
-  );
+  return <ProfileContent />;
 }
 
 function ProfileContent() {
@@ -40,9 +36,12 @@ function ProfileContent() {
     const fetchScores = async () => {
       try {
         const response: any = await api.get('/scores');
-        setScores(response.data?.scores || []);
+        const apiScores = response.data?.scores || [];
+        // Fall back to locally-stored scores (guest play, or a slow server save)
+        // so the XP tracker and badges are never blank after finishing a room.
+        setScores(apiScores.length > 0 ? apiScores : getLocalScores());
       } catch {
-        // Silent fail
+        setScores(getLocalScores());
       } finally {
         setLoading(false);
       }
@@ -64,15 +63,20 @@ function ProfileContent() {
   const xpForNextLevel = currentLevel * 1000;
   const xpProgress = (totalXP % 1000) / 1000 * 100;
 
-  // Badges logic
+  // Badges logic. Local scores don't carry a `percentage` field, so derive it
+  // from score/maxScore when it's missing.
+  const isPerfect = (s: any) => {
+    const pct = s.percentage ?? (s.maxScore ? Math.round((s.score / s.maxScore) * 100) : 0);
+    return pct === 100;
+  };
   const badges = [];
-  if (scores.some(s => s.roomId === 'phishing' && s.percentage === 100)) {
+  if (scores.some(s => s.roomId === 'phishing' && isPerfect(s))) {
     badges.push({ name: 'Phishing Expert', icon: Mail, color: 'text-rose-500', bg: 'bg-rose-50', border: 'border-rose-200' });
   }
-  if (scores.some(s => s.roomId === 'passwords' && s.percentage === 100)) {
+  if (scores.some(s => s.roomId === 'passwords' && isPerfect(s))) {
     badges.push({ name: 'Security Master', icon: Lock, color: 'text-violet-500', bg: 'bg-violet-50', border: 'border-violet-200' });
   }
-  if (scores.some(s => s.roomId === 'social-engineering' && s.percentage === 100)) {
+  if (scores.some(s => s.roomId === 'social-engineering' && isPerfect(s))) {
     badges.push({ name: 'Social Shield', icon: Users, color: 'text-emerald-500', bg: 'bg-emerald-50', border: 'border-emerald-200' });
   }
   if (scores.length >= 3) {
@@ -94,12 +98,12 @@ function ProfileContent() {
             
             <div className="flex-1 text-center md:text-left">
               <div className="flex items-center justify-center md:justify-start gap-3 mb-2">
-                <h1 className="text-3xl font-bold text-zinc-900 tracking-tight">{user?.name}</h1>
+                <h1 className="text-3xl font-bold text-zinc-900 tracking-tight">{user?.name || 'Guest Explorer'}</h1>
                 <div className="px-3 py-1 bg-zinc-100 rounded-full text-xs font-bold text-zinc-600 uppercase tracking-wider">
                   Level {currentLevel}
                 </div>
               </div>
-              <p className="text-zinc-500 font-medium mb-6">{user?.email}</p>
+              <p className="text-zinc-500 font-medium mb-6">{user?.email || 'Playing as a guest — sign up to save your progress'}</p>
               
               <div className="w-full max-w-md mx-auto md:mx-0">
                 <div className="flex justify-between text-sm font-bold mb-2">

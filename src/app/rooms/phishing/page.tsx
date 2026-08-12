@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import ProtectedRoute from '@/features/auth/ProtectedRoute';
 import { useAudio } from '@/features/audio/AudioContext';
 import api from '@/lib/api';
 import { saveLocalScore, saveLocalProgress } from '@/lib/progressLocal';
@@ -45,11 +44,7 @@ interface FeedbackData {
 }
 
 export default function PhishingRoomPage() {
-  return (
-    <ProtectedRoute>
-      <PhishingRoomContent />
-    </ProtectedRoute>
-  );
+  return <PhishingRoomContent />;
 }
 
 function PhishingRoomContent() {

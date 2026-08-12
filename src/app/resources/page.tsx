@@ -62,40 +62,21 @@ export default function ResourcesPage() {
           throw new Error('Empty resources');
         }
       } catch {
-        // Hardcoded fallback if backend is down or DB is unseeded
+        // Hardcoded Ireland fallback if the backend is down or the DB is unseeded,
+        // so the resources page is always populated. Mirrors the server seed list.
         setResources([
-          {
-            _id: 'fallback-1',
-            category: 'Reporting Fraud',
-            title: 'Garda National Economic Crime Bureau',
-            description: 'Report fraud, scams, and cybercrime directly to An Garda Síochána.',
-            url: 'https://www.garda.ie/en/crime/fraud/',
-            icon: 'AlertTriangle'
-          },
-          {
-            _id: 'fallback-2',
-            category: 'Learning More',
-            title: 'NCSC Ireland',
-            description: 'The National Cyber Security Centre provides guidance for individuals and businesses in Ireland.',
-            url: 'https://www.ncsc.gov.ie/',
-            icon: 'Shield'
-          },
-          {
-            _id: 'fallback-3',
-            category: 'Learning More',
-            title: 'FraudSMART',
-            description: 'An initiative by the Banking & Payments Federation Ireland to protect consumers from financial fraud.',
-            url: 'https://www.fraudsmart.ie/',
-            icon: 'Landmark'
-          },
-          {
-            _id: 'fallback-4',
-            category: 'Password Tools',
-            title: 'Bitwarden',
-            description: 'A highly recommended, free, and secure password manager for all your devices.',
-            url: 'https://bitwarden.com/',
-            icon: 'Lock'
-          }
+          { _id: 'fb-1', category: 'Reporting Fraud', title: 'An Garda Síochána', description: 'Report cybercrime and fraud to the Irish police.', url: 'https://www.garda.ie/en/crime/fraud/', icon: 'Shield' },
+          { _id: 'fb-2', category: 'Reporting Fraud', title: 'FraudSMART (Ireland)', description: 'Banking and Payments Federation Ireland fraud awareness.', url: 'https://www.fraudsmart.ie/', icon: 'AlertTriangle' },
+          { _id: 'fb-3', category: 'Reporting Fraud', title: 'European Consumer Centre Ireland', description: 'Free advice and help reporting cross-border scams.', url: 'https://www.eccireland.ie/', icon: 'Landmark' },
+          { _id: 'fb-4', category: 'Learning More', title: 'National Cyber Security Centre Ireland', description: 'Irish government guidance on staying safe online.', url: 'https://www.ncsc.gov.ie/', icon: 'Globe' },
+          { _id: 'fb-5', category: 'Learning More', title: 'Age Action Ireland', description: 'Digital literacy programmes for older adults.', url: 'https://www.ageaction.ie/', icon: 'Users' },
+          { _id: 'fb-6', category: 'Learning More', title: 'Google Phishing Quiz', description: 'Test your phishing detection skills with Google.', url: 'https://phishingquiz.withgoogle.com/', icon: 'FileText' },
+          { _id: 'fb-7', category: 'Password Tools', title: 'Bitwarden', description: 'Free, open-source password manager. Works on all devices.', url: 'https://bitwarden.com/', icon: 'Lock' },
+          { _id: 'fb-8', category: 'Password Tools', title: 'Have I Been Pwned', description: 'Check if your email has been in a data breach.', url: 'https://haveibeenpwned.com/', icon: 'AlertTriangle' },
+          { _id: 'fb-9', category: 'Password Tools', title: 'How Secure Is My Password', description: 'See how long it would take to crack your password.', url: 'https://www.security.org/how-secure-is-my-password/', icon: 'Shield' },
+          { _id: 'fb-10', category: 'Get Help', title: 'Citizens Information (Ireland)', description: 'Free information and advice on public services.', url: 'https://www.citizensinformation.ie/', icon: 'BookOpen' },
+          { _id: 'fb-11', category: 'Get Help', title: 'ALONE', description: 'Support and companionship for older people in Ireland: 0818 222 024.', url: 'https://www.alone.ie/', icon: 'Phone' },
+          { _id: 'fb-12', category: 'Get Help', title: 'MABS', description: 'Free, confidential money advice and budgeting support.', url: 'https://www.mabs.ie/', icon: 'Users' },
         ]);
       } finally {
         setLoading(false);

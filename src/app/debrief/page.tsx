@@ -4,7 +4,6 @@ import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import ProtectedRoute from '@/features/auth/ProtectedRoute';
 import { 
   CheckCircle2, ArrowRight, Shield, Mail, Lock, 
   Users, Lightbulb
@@ -100,9 +99,7 @@ const debriefData: Record<string, RoomDebrief> = {
 export default function DebriefPage() {
   return (
     <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-[#FAF9F6]"><div className="w-10 h-10 border-2 border-zinc-400 border-t-zinc-900 rounded-full animate-spin" /></div>}>
-      <ProtectedRoute>
-        <DebriefContent />
-      </ProtectedRoute>
+      <DebriefContent />
     </Suspense>
   );
 }

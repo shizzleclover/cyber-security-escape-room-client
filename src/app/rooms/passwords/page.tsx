@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import ProtectedRoute from '@/features/auth/ProtectedRoute';
 import { useAudio } from '@/features/audio/AudioContext';
 import api from '@/lib/api';
 import { saveLocalScore, saveLocalProgress } from '@/lib/progressLocal';
@@ -605,11 +604,7 @@ function PasswordManagerChallenge({ onComplete }: { onComplete: (correct: boolea
 // ─── Main Password Room ──────────────────────────────────────────────────────
 
 export default function PasswordRoomPage() {
-  return (
-    <ProtectedRoute>
-      <PasswordRoomContent />
-    </ProtectedRoute>
-  );
+  return <PasswordRoomContent />;
 }
 
 function PasswordRoomContent() {

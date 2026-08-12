@@ -5,9 +5,9 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/features/auth/AuthContext';
-import ProtectedRoute from '@/features/auth/ProtectedRoute';
 import api from '@/lib/api';
 import { getLocalQuiz, markLocalQuizSynced } from '@/lib/quizLocal';
+import { getLocalScores, getLocalProgress } from '@/lib/progressLocal';
 import { 
   Mail, Lock, Users, ArrowRight, CheckCircle2, 
   Clock, Trophy, Sparkles, Play
@@ -33,12 +33,46 @@ interface RoomProgressData {
   maxScore?: number;
 }
 
+/**
+ * Build a progress list from locally-stored scores/progress, so the hub tracker
+ * works for guests and when the backend save hasn't landed yet.
+ */
+function mergeLocalProgress(apiProgress: RoomProgressData[]): RoomProgressData[] {
+  const localScores = getLocalScores();
+  const localProgress = getLocalProgress();
+  const byRoom = new Map<string, RoomProgressData>();
+
+  // Start from any API records we did get.
+  apiProgress.forEach((p) => byRoom.set(p.roomId, p));
+
+  // A locally-saved score means that room was completed.
+  localScores.forEach((s) => {
+    byRoom.set(s.roomId, {
+      roomId: s.roomId,
+      status: 'completed',
+      score: s.score,
+      maxScore: s.maxScore,
+    });
+  });
+
+  // Fold in any local progress status we don't already have a completion for.
+  localProgress.forEach((p) => {
+    const existing = byRoom.get(p.roomId);
+    if (!existing || existing.status !== 'completed') {
+      byRoom.set(p.roomId, {
+        roomId: p.roomId,
+        status: p.status === 'completed' ? 'completed' : 'in-progress',
+        score: existing?.score,
+        maxScore: existing?.maxScore,
+      });
+    }
+  });
+
+  return Array.from(byRoom.values());
+}
+
 export default function HubPage() {
-  return (
-    <ProtectedRoute>
-      <HubContent />
-    </ProtectedRoute>
-  );
+  return <HubContent />;
 }
 
 function HubContent() {
@@ -75,9 +109,18 @@ function HubContent() {
 
       try {
         const response: any = await api.get('/progress');
-        setProgress(response.data?.progress || []);
+        const apiProgress: RoomProgressData[] = response.data?.progress || [];
+        const hasApiCompletion = apiProgress.some((p) => p.status === 'completed');
+        if (hasApiCompletion) {
+          setProgress(apiProgress);
+        } else {
+          // Merge in locally-stored results so the progress tracker reflects
+          // rooms finished as a guest (or before a slow server save landed).
+          setProgress(mergeLocalProgress(apiProgress));
+        }
       } catch {
-        setProgress([]);
+        // Not signed in / API unreachable — show progress from local storage.
+        setProgress(mergeLocalProgress([]));
       } finally {
         setLoading(false);
       }
