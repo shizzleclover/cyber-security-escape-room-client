@@ -1,7 +1,8 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useAuth } from '@/features/auth/AuthContext';
 import {
@@ -133,8 +134,19 @@ function ShieldBuddy({ size = 200 }: { size?: number }) {
 /* ─── Page ──────────────────────────────────────────────────────────────── */
 
 export default function LandingPage() {
-  const { user } = useAuth();
-  const startHref = '/register';
+  const { user, loading } = useAuth();
+  const router = useRouter();
+
+  // Signed-in users have no business on the marketing landing page — send them
+  // straight to the hub so nothing (logo, back button, direct URL) parks them here.
+  useEffect(() => {
+    if (!loading && user) {
+      router.replace('/hub');
+    }
+  }, [user, loading, router]);
+
+  // Path nodes / CTAs: signed-in users go into the app; guests start with sign-up.
+  const startHref = user ? '/hub' : '/register';
 
   // Hero scroll choreography
   const heroRef = useRef<HTMLDivElement>(null);
@@ -165,6 +177,12 @@ export default function LandingPage() {
     'Spot phishing', 'Build strong passwords', 'Shut down scams',
     'Earn XP', 'Keep your streak', 'Stay safe online',
   ];
+
+  // While auth is resolving, or if a signed-in user is about to be redirected,
+  // don't flash the marketing page.
+  if (loading || user) {
+    return <main className="min-h-screen bg-[#FAFAF8]" />;
+  }
 
   return (
     <main className="relative min-h-screen bg-[#FAFAF8] text-[#101010] overflow-hidden selection:bg-[#101010] selection:text-[#FAFAF8]">

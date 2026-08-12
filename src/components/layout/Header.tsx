@@ -35,8 +35,8 @@ export default function Header() {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-zinc-200/60">
       <div className="mx-auto max-w-5xl px-4 h-14 flex items-center justify-between">
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-2.5 group">
+        {/* Logo — signed-in users go to the hub, never back to the marketing landing page */}
+        <Link href={user ? '/hub' : '/'} className="flex items-center gap-2.5 group">
           <Shield strokeWidth={2} className="w-5 h-5 text-zinc-900 group-hover:scale-110 transition-transform" />
           <span className="text-[15px] font-bold tracking-tight text-zinc-900">
             CyberEscape
