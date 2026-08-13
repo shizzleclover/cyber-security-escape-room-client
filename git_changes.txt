@@ -1,0 +1,629 @@
+commit 674fd5ddca99d334579ae36047a51adc85e7596b
+Author: Murewa Ajala <murewatajala@gmail.com>
+Date:   Thu Aug 13 00:13:38 2026 +0100
+
+    Surface real auth errors on register/login
+    
+    Both pages read err.response?.data?.error, but api.ts rejects with a plain
+    Error(message) that has no .response — so every failure showed a generic
+    message and hid the real cause (e.g. "An account with that email already
+    exists"). Read err.message instead.
+    
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+diff --git a/src/app/login/page.tsx b/src/app/login/page.tsx
+index 6df5762..6d8c5d4 100644
+--- a/src/app/login/page.tsx
++++ b/src/app/login/page.tsx
+@@ -27,7 +27,8 @@ export default function LoginPage() {
+       await login(formData.email, 'NoPassword123!');
+       router.push('/hub');
+     } catch (err: any) {
+-      setError(err.response?.data?.error || 'Invalid credentials.');
++      // api.ts rejects with a plain Error(message); there is no err.response here.
++      setError(err.message || 'Invalid credentials.');
+     } finally {
+       setLoading(false);
+     }
+diff --git a/src/app/register/page.tsx b/src/app/register/page.tsx
+index 3a1ed66..15b87ce 100644
+--- a/src/app/register/page.tsx
++++ b/src/app/register/page.tsx
+@@ -43,7 +43,8 @@ export default function RegisterPage() {
+       });
+       router.push('/hub');
+     } catch (err: any) {
+-      setError(err.response?.data?.error || 'Registration failed. Please try again.');
++      // api.ts rejects with a plain Error(message); there is no err.response here.
++      setError(err.message || 'Registration failed. Please try again.');
+     } finally {
+       setLoading(false);
+     }
+
+commit 4086e52c064a3524c2f5338117971b1ee75dc6f9
+Author: Murewa Ajala <murewatajala@gmail.com>
+Date:   Wed Aug 12 19:44:00 2026 +0100
+
+    Keep signed-in users out of the landing page
+    
+    - Landing "THE PATH" nodes/CTAs pointed at /register unconditionally, so a
+      logged-in user clicking any step was sent to register again. startHref is now
+      auth-aware (hub when signed in, register for guests).
+    - Redirect signed-in users off the landing page to /hub, and point the navbar
+      logo at /hub when signed in, so nothing routes them back to the marketing page.
+    
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+diff --git a/src/app/page.tsx b/src/app/page.tsx
+index e938b6e..6af1adc 100644
+--- a/src/app/page.tsx
++++ b/src/app/page.tsx
+@@ -1,7 +1,8 @@
+ 'use client';
+ 
+-import { useRef } from 'react';
++import { useRef, useEffect } from 'react';
+ import Link from 'next/link';
++import { useRouter } from 'next/navigation';
+ import { motion, useScroll, useTransform } from 'framer-motion';
+ import { useAuth } from '@/features/auth/AuthContext';
+ import {
+@@ -133,8 +134,19 @@ function ShieldBuddy({ size = 200 }: { size?: number }) {
+ /* ─── Page ──────────────────────────────────────────────────────────────── */
+ 
+ export default function LandingPage() {
+-  const { user } = useAuth();
+-  const startHref = '/register';
++  const { user, loading } = useAuth();
++  const router = useRouter();
++
++  // Signed-in users have no business on the marketing landing page — send them
++  // straight to the hub so nothing (logo, back button, direct URL) parks them here.
++  useEffect(() => {
++    if (!loading && user) {
++      router.replace('/hub');
++    }
++  }, [user, loading, router]);
++
++  // Path nodes / CTAs: signed-in users go into the app; guests start with sign-up.
++  const startHref = user ? '/hub' : '/register';
+ 
+   // Hero scroll choreography
+   const heroRef = useRef<HTMLDivElement>(null);
+@@ -166,6 +178,12 @@ export default function LandingPage() {
+     'Earn XP', 'Keep your streak', 'Stay safe online',
+   ];
+ 
++  // While auth is resolving, or if a signed-in user is about to be redirected,
++  // don't flash the marketing page.
++  if (loading || user) {
++    return <main className="min-h-screen bg-[#FAFAF8]" />;
++  }
++
+   return (
+     <main className="relative min-h-screen bg-[#FAFAF8] text-[#101010] overflow-hidden selection:bg-[#101010] selection:text-[#FAFAF8]">
+ 
+diff --git a/src/components/layout/Header.tsx b/src/components/layout/Header.tsx
+index f91368e..1983b3a 100644
+--- a/src/components/layout/Header.tsx
++++ b/src/components/layout/Header.tsx
+@@ -35,8 +35,8 @@ export default function Header() {
+   return (
+     <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-zinc-200/60">
+       <div className="mx-auto max-w-5xl px-4 h-14 flex items-center justify-between">
+-        {/* Logo */}
+-        <Link href="/" className="flex items-center gap-2.5 group">
++        {/* Logo — signed-in users go to the hub, never back to the marketing landing page */}
++        <Link href={user ? '/hub' : '/'} className="flex items-center gap-2.5 group">
+           <Shield strokeWidth={2} className="w-5 h-5 text-zinc-900 group-hover:scale-110 transition-transform" />
+           <span className="text-[15px] font-bold tracking-tight text-zinc-900">
+             CyberEscape
+
+commit a66fcee2d87e870d70a6ffd6ddc02665c362da89
+Author: Murewa Ajala <murewatajala@gmail.com>
+Date:   Wed Aug 12 14:52:08 2026 +0100
+
+    Make results/XP work without login; 7-question quiz; robust resources
+    
+    - Complete the login-optional migration: remove ProtectedRoute from hub,
+      dashboard, profile, all three rooms, debrief and certificate so guests can
+      use the whole flow.
+    - Fix blank dashboard & dead XP/progress trackers: hub progress and profile
+      XP/badges now fall back to locally-stored scores/progress (not just the API),
+      so they reflect what the user actually did whether signed in or a guest.
+    - Profile badges derive percentage from score/maxScore (local scores have no
+      percentage field); guest sees a friendly name/prompt instead of blanks.
+    - Quiz set to 7 questions (3 phishing, 2 passwords, 2 social), IDs aligned to
+      the server bank; € currency.
+    - Resources page ships a complete 12-item Ireland fallback so it's never empty
+      when the backend is unseeded/cold.
+    - gitignore pnpm-workspace.yaml (newer pnpm auto-generates a placeholder that
+      breaks Railway's pnpm 9 build).
+    
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+diff --git a/.gitignore b/.gitignore
+index 5ef6a52..f647d9c 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -39,3 +39,6 @@ yarn-error.log*
+ # typescript
+ *.tsbuildinfo
+ next-env.d.ts
++
++# Auto-generated by newer pnpm; breaks Railway pnpm 9 build
++pnpm-workspace.yaml
+diff --git a/src/app/certificate/page.tsx b/src/app/certificate/page.tsx
+index d252b57..d0f649b 100644
+--- a/src/app/certificate/page.tsx
++++ b/src/app/certificate/page.tsx
+@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
+ import Link from 'next/link';
+ import { motion } from 'framer-motion';
+ import { useAuth } from '@/features/auth/AuthContext';
+-import ProtectedRoute from '@/features/auth/ProtectedRoute';
+ import api from '@/lib/api';
+ import { Shield, Award, Printer, ArrowLeft } from 'lucide-react';
+ 
+@@ -16,11 +15,7 @@ const ROOM_NAMES: Record<string, string> = {
+ };
+ 
+ export default function CertificatePage() {
+-  return (
+-    <ProtectedRoute>
+-      <CertificateContent />
+-    </ProtectedRoute>
+-  );
++  return <CertificateContent />;
+ }
+ 
+ function CertificateContent() {
+diff --git a/src/app/dashboard/page.tsx b/src/app/dashboard/page.tsx
+index b611ceb..0d00fe8 100644
+--- a/src/app/dashboard/page.tsx
++++ b/src/app/dashboard/page.tsx
+@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
+ import Link from 'next/link';
+ import { motion } from 'framer-motion';
+ import { useAuth } from '@/features/auth/AuthContext';
+-import ProtectedRoute from '@/features/auth/ProtectedRoute';
+ import api from '@/lib/api';
+ import { getLocalQuiz } from '@/lib/quizLocal';
+ import { getLocalScores } from '@/lib/progressLocal';
+@@ -44,11 +43,7 @@ interface QuizData {
+ }
+ 
+ export default function DashboardPage() {
+-  return (
+-    <ProtectedRoute>
+-      <DashboardContent />
+-    </ProtectedRoute>
+-  );
++  return <DashboardContent />;
+ }
+ 
+ function DashboardContent() {
+diff --git a/src/app/debrief/page.tsx b/src/app/debrief/page.tsx
+index 6e91ce4..bd1dd3e 100644
+--- a/src/app/debrief/page.tsx
++++ b/src/app/debrief/page.tsx
+@@ -4,7 +4,6 @@ import { useSearchParams } from 'next/navigation';
+ import { Suspense } from 'react';
+ import Link from 'next/link';
+ import { motion } from 'framer-motion';
+-import ProtectedRoute from '@/features/auth/ProtectedRoute';
+ import { 
+   CheckCircle2, ArrowRight, Shield, Mail, Lock, 
+   Users, Lightbulb
+@@ -100,9 +99,7 @@ const debriefData: Record<string, RoomDebrief> = {
+ export default function DebriefPage() {
+   return (
+     <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-[#FAF9F6]"><div className="w-10 h-10 border-2 border-zinc-400 border-t-zinc-900 rounded-full animate-spin" /></div>}>
+-      <ProtectedRoute>
+-        <DebriefContent />
+-      </ProtectedRoute>
++      <DebriefContent />
+     </Suspense>
+   );
+ }
+diff --git a/src/app/hub/page.tsx b/src/app/hub/page.tsx
+index a604dc4..50ddfc2 100644
+--- a/src/app/hub/page.tsx
++++ b/src/app/hub/page.tsx
+@@ -5,9 +5,9 @@ import Link from 'next/link';
+ import { useRouter } from 'next/navigation';
+ import { motion } from 'framer-motion';
+ import { useAuth } from '@/features/auth/AuthContext';
+-import ProtectedRoute from '@/features/auth/ProtectedRoute';
+ import api from '@/lib/api';
+ import { getLocalQuiz, markLocalQuizSynced } from '@/lib/quizLocal';
++import { getLocalScores, getLocalProgress } from '@/lib/progressLocal';
+ import { 
+   Mail, Lock, Users, ArrowRight, CheckCircle2, 
+   Clock, Trophy, Sparkles, Play
+@@ -33,12 +33,46 @@ interface RoomProgressData {
+   maxScore?: number;
+ }
+ 
++/**
++ * Build a progress list from locally-stored scores/progress, so the hub tracker
++ * works for guests and when the backend save hasn't landed yet.
++ */
++function mergeLocalProgress(apiProgress: RoomProgressData[]): RoomProgressData[] {
++  const localScores = getLocalScores();
++  const localProgress = getLocalProgress();
++  const byRoom = new Map<string, RoomProgressData>();
++
++  // Start from any API records we did get.
++  apiProgress.forEach((p) => byRoom.set(p.roomId, p));
++
++  // A locally-saved score means that room was completed.
++  localScores.forEach((s) => {
++    byRoom.set(s.roomId, {
++      roomId: s.roomId,
++      status: 'completed',
++      score: s.score,
++      maxScore: s.maxScore,
++    });
++  });
++
++  // Fold in any local progress status we don't already have a completion for.
++  localProgress.forEach((p) => {
++    const existing = byRoom.get(p.roomId);
++    if (!existing || existing.status !== 'completed') {
++      byRoom.set(p.roomId, {
++        roomId: p.roomId,
++        status: p.status === 'completed' ? 'completed' : 'in-progress',
++        score: existing?.score,
++        maxScore: existing?.maxScore,
++      });
++    }
++  });
++
++  return Array.from(byRoom.values());
++}
++
+ export default function HubPage() {
+-  return (
+-    <ProtectedRoute>
+-      <HubContent />
+-    </ProtectedRoute>
+-  );
++  return <HubContent />;
+ }
+ 
+ function HubContent() {
+@@ -75,9 +109,18 @@ function HubContent() {
+ 
+       try {
+         const response: any = await api.get('/progress');
+-        setProgress(response.data?.progress || []);
++        const apiProgress: RoomProgressData[] = response.data?.progress || [];
++        const hasApiCompletion = apiProgress.some((p) => p.status === 'completed');
++        if (hasApiCompletion) {
++          setProgress(apiProgress);
++        } else {
++          // Merge in locally-stored results so the progress tracker reflects
++          // rooms finished as a guest (or before a slow server save landed).
++          setProgress(mergeLocalProgress(apiProgress));
++        }
+       } catch {
+-        setProgress([]);
++        // Not signed in / API unreachable — show progress from local storage.
++        setProgress(mergeLocalProgress([]));
+       } finally {
+         setLoading(false);
+       }
+diff --git a/src/app/profile/page.tsx b/src/app/profile/page.tsx
+index 15bade7..84f3345 100644
+--- a/src/app/profile/page.tsx
++++ b/src/app/profile/page.tsx
+@@ -3,9 +3,9 @@
+ import { useState, useEffect } from 'react';
+ import { motion } from 'framer-motion';
+ import { useAuth } from '@/features/auth/AuthContext';
+-import ProtectedRoute from '@/features/auth/ProtectedRoute';
+ import api from '@/lib/api';
+-import { 
++import { getLocalScores } from '@/lib/progressLocal';
++import {
+   User, Shield, Mail, Lock, Users, Trophy, 
+   Award, Sparkles, Star, Zap
+ } from 'lucide-react';
+@@ -24,11 +24,7 @@ const stagger = {
+ };
+ 
+ export default function ProfilePage() {
+-  return (
+-    <ProtectedRoute>
+-      <ProfileContent />
+-    </ProtectedRoute>
+-  );
++  return <ProfileContent />;
+ }
+ 
+ function ProfileContent() {
+@@ -40,9 +36,12 @@ function ProfileContent() {
+     const fetchScores = async () => {
+       try {
+         const response: any = await api.get('/scores');
+-        setScores(response.data?.scores || []);
++        const apiScores = response.data?.scores || [];
++        // Fall back to locally-stored scores (guest play, or a slow server save)
++        // so the XP tracker and badges are never blank after finishing a room.
++        setScores(apiScores.length > 0 ? apiScores : getLocalScores());
+       } catch {
+-        // Silent fail
++        setScores(getLocalScores());
+       } finally {
+         setLoading(false);
+       }
+@@ -64,15 +63,20 @@ function ProfileContent() {
+   const xpForNextLevel = currentLevel * 1000;
+   const xpProgress = (totalXP % 1000) / 1000 * 100;
+ 
+-  // Badges logic
++  // Badges logic. Local scores don't carry a `percentage` field, so derive it
++  // from score/maxScore when it's missing.
++  const isPerfect = (s: any) => {
++    const pct = s.percentage ?? (s.maxScore ? Math.round((s.score / s.maxScore) * 100) : 0);
++    return pct === 100;
++  };
+   const badges = [];
+-  if (scores.some(s => s.roomId === 'phishing' && s.percentage === 100)) {
++  if (scores.some(s => s.roomId === 'phishing' && isPerfect(s))) {
+     badges.push({ name: 'Phishing Expert', icon: Mail, color: 'text-rose-500', bg: 'bg-rose-50', border: 'border-rose-200' });
+   }
+-  if (scores.some(s => s.roomId === 'passwords' && s.percentage === 100)) {
++  if (scores.some(s => s.roomId === 'passwords' && isPerfect(s))) {
+     badges.push({ name: 'Security Master', icon: Lock, color: 'text-violet-500', bg: 'bg-violet-50', border: 'border-violet-200' });
+   }
+-  if (scores.some(s => s.roomId === 'social-engineering' && s.percentage === 100)) {
++  if (scores.some(s => s.roomId === 'social-engineering' && isPerfect(s))) {
+     badges.push({ name: 'Social Shield', icon: Users, color: 'text-emerald-500', bg: 'bg-emerald-50', border: 'border-emerald-200' });
+   }
+   if (scores.length >= 3) {
+@@ -94,12 +98,12 @@ function ProfileContent() {
+             
+             <div className="flex-1 text-center md:text-left">
+               <div className="flex items-center justify-center md:justify-start gap-3 mb-2">
+-                <h1 className="text-3xl font-bold text-zinc-900 tracking-tight">{user?.name}</h1>
++                <h1 className="text-3xl font-bold text-zinc-900 tracking-tight">{user?.name || 'Guest Explorer'}</h1>
+                 <div className="px-3 py-1 bg-zinc-100 rounded-full text-xs font-bold text-zinc-600 uppercase tracking-wider">
+                   Level {currentLevel}
+                 </div>
+               </div>
+-              <p className="text-zinc-500 font-medium mb-6">{user?.email}</p>
++              <p className="text-zinc-500 font-medium mb-6">{user?.email || 'Playing as a guest — sign up to save your progress'}</p>
+               
+               <div className="w-full max-w-md mx-auto md:mx-0">
+                 <div className="flex justify-between text-sm font-bold mb-2">
+diff --git a/src/app/resources/page.tsx b/src/app/resources/page.tsx
+index b6fad6a..69cbfaa 100644
+--- a/src/app/resources/page.tsx
++++ b/src/app/resources/page.tsx
+@@ -62,40 +62,21 @@ export default function ResourcesPage() {
+           throw new Error('Empty resources');
+         }
+       } catch {
+-        // Hardcoded fallback if backend is down or DB is unseeded
++        // Hardcoded Ireland fallback if the backend is down or the DB is unseeded,
++        // so the resources page is always populated. Mirrors the server seed list.
+         setResources([
+-          {
+-            _id: 'fallback-1',
+-            category: 'Reporting Fraud',
+-            title: 'Garda National Economic Crime Bureau',
+-            description: 'Report fraud, scams, and cybercrime directly to An Garda Síochána.',
+-            url: 'https://www.garda.ie/en/crime/fraud/',
+-            icon: 'AlertTriangle'
+-          },
+-          {
+-            _id: 'fallback-2',
+-            category: 'Learning More',
+-            title: 'NCSC Ireland',
+-            description: 'The National Cyber Security Centre provides guidance for individuals and businesses in Ireland.',
+-            url: 'https://www.ncsc.gov.ie/',
+-            icon: 'Shield'
+-          },
+-          {
+-            _id: 'fallback-3',
+-            category: 'Learning More',
+-            title: 'FraudSMART',
+-            description: 'An initiative by the Banking & Payments Federation Ireland to protect consumers from financial fraud.',
+-            url: 'https://www.fraudsmart.ie/',
+-            icon: 'Landmark'
+-          },
+-          {
+-            _id: 'fallback-4',
+-            category: 'Password Tools',
+-            title: 'Bitwarden',
+-            description: 'A highly recommended, free, and secure password manager for all your devices.',
+-            url: 'https://bitwarden.com/',
+-            icon: 'Lock'
+-          }
++          { _id: 'fb-1', category: 'Reporting Fraud', title: 'An Garda Síochána', description: 'Report cybercrime and fraud to the Irish police.', url: 'https://www.garda.ie/en/crime/fraud/', icon: 'Shield' },
++          { _id: 'fb-2', category: 'Reporting Fraud', title: 'FraudSMART (Ireland)', description: 'Banking and Payments Federation Ireland fraud awareness.', url: 'https://www.fraudsmart.ie/', icon: 'AlertTriangle' },
++          { _id: 'fb-3', category: 'Reporting Fraud', title: 'European Consumer Centre Ireland', description: 'Free advice and help reporting cross-border scams.', url: 'https://www.eccireland.ie/', icon: 'Landmark' },
++          { _id: 'fb-4', category: 'Learning More', title: 'National Cyber Security Centre Ireland', description: 'Irish government guidance on staying safe online.', url: 'https://www.ncsc.gov.ie/', icon: 'Globe' },
++          { _id: 'fb-5', category: 'Learning More', title: 'Age Action Ireland', description: 'Digital literacy programmes for older adults.', url: 'https://www.ageaction.ie/', icon: 'Users' },
++          { _id: 'fb-6', category: 'Learning More', title: 'Google Phishing Quiz', description: 'Test your phishing detection skills with Google.', url: 'https://phishingquiz.withgoogle.com/', icon: 'FileText' },
++          { _id: 'fb-7', category: 'Password Tools', title: 'Bitwarden', description: 'Free, open-source password manager. Works on all devices.', url: 'https://bitwarden.com/', icon: 'Lock' },
++          { _id: 'fb-8', category: 'Password Tools', title: 'Have I Been Pwned', description: 'Check if your email has been in a data breach.', url: 'https://haveibeenpwned.com/', icon: 'AlertTriangle' },
++          { _id: 'fb-9', category: 'Password Tools', title: 'How Secure Is My Password', description: 'See how long it would take to crack your password.', url: 'https://www.security.org/how-secure-is-my-password/', icon: 'Shield' },
++          { _id: 'fb-10', category: 'Get Help', title: 'Citizens Information (Ireland)', description: 'Free information and advice on public services.', url: 'https://www.citizensinformation.ie/', icon: 'BookOpen' },
++          { _id: 'fb-11', category: 'Get Help', title: 'ALONE', description: 'Support and companionship for older people in Ireland: 0818 222 024.', url: 'https://www.alone.ie/', icon: 'Phone' },
++          { _id: 'fb-12', category: 'Get Help', title: 'MABS', description: 'Free, confidential money advice and budgeting support.', url: 'https://www.mabs.ie/', icon: 'Users' },
+         ]);
+       } finally {
+         setLoading(false);
+diff --git a/src/app/rooms/passwords/page.tsx b/src/app/rooms/passwords/page.tsx
+index ab51ddb..3fb60d6 100644
+--- a/src/app/rooms/passwords/page.tsx
++++ b/src/app/rooms/passwords/page.tsx
+@@ -3,7 +3,6 @@
+ import { useState } from 'react';
+ import { useRouter } from 'next/navigation';
+ import { motion, AnimatePresence } from 'framer-motion';
+-import ProtectedRoute from '@/features/auth/ProtectedRoute';
+ import { useAudio } from '@/features/audio/AudioContext';
+ import api from '@/lib/api';
+ import { saveLocalScore, saveLocalProgress } from '@/lib/progressLocal';
+@@ -605,11 +604,7 @@ function PasswordManagerChallenge({ onComplete }: { onComplete: (correct: boolea
+ // ─── Main Password Room ──────────────────────────────────────────────────────
+ 
+ export default function PasswordRoomPage() {
+-  return (
+-    <ProtectedRoute>
+-      <PasswordRoomContent />
+-    </ProtectedRoute>
+-  );
++  return <PasswordRoomContent />;
+ }
+ 
+ function PasswordRoomContent() {
+diff --git a/src/app/rooms/phishing/page.tsx b/src/app/rooms/phishing/page.tsx
+index 9f9e4fb..af09c7e 100644
+--- a/src/app/rooms/phishing/page.tsx
++++ b/src/app/rooms/phishing/page.tsx
+@@ -3,7 +3,6 @@
+ import { useState, useEffect } from 'react';
+ import { useRouter } from 'next/navigation';
+ import { motion, AnimatePresence } from 'framer-motion';
+-import ProtectedRoute from '@/features/auth/ProtectedRoute';
+ import { useAudio } from '@/features/audio/AudioContext';
+ import api from '@/lib/api';
+ import { saveLocalScore, saveLocalProgress } from '@/lib/progressLocal';
+@@ -45,11 +44,7 @@ interface FeedbackData {
+ }
+ 
+ export default function PhishingRoomPage() {
+-  return (
+-    <ProtectedRoute>
+-      <PhishingRoomContent />
+-    </ProtectedRoute>
+-  );
++  return <PhishingRoomContent />;
+ }
+ 
+ function PhishingRoomContent() {
+diff --git a/src/app/rooms/social-engineering/page.tsx b/src/app/rooms/social-engineering/page.tsx
+index 661f9e0..c41f6b0 100644
+--- a/src/app/rooms/social-engineering/page.tsx
++++ b/src/app/rooms/social-engineering/page.tsx
+@@ -3,7 +3,6 @@
+ import { useState, useEffect } from 'react';
+ import { useRouter } from 'next/navigation';
+ import { motion, AnimatePresence } from 'framer-motion';
+-import ProtectedRoute from '@/features/auth/ProtectedRoute';
+ import { useAudio } from '@/features/audio/AudioContext';
+ import api from '@/lib/api';
+ import { saveLocalScore, saveLocalProgress } from '@/lib/progressLocal';
+@@ -51,11 +50,7 @@ interface FeedbackData {
+ }
+ 
+ export default function SocialEngineeringRoomPage() {
+-  return (
+-    <ProtectedRoute>
+-      <SocialEngineeringContent />
+-    </ProtectedRoute>
+-  );
++  return <SocialEngineeringContent />;
+ }
+ 
+ function SocialEngineeringContent() {
+diff --git a/src/features/quiz/quizData.ts b/src/features/quiz/quizData.ts
+index 472ecce..a6106ee 100644
+--- a/src/features/quiz/quizData.ts
++++ b/src/features/quiz/quizData.ts
+@@ -3,9 +3,9 @@
+  * Correct answers are included here for client-side checking,
+  * but also validated server-side on submission.
+  *
+- * Kept intentionally short (6 questions — two per topic) so the
+- * pre-assessment is quick for older learners. IDs match the server
+- * question bank so server-side grading still lines up.
++ * Kept to 7 questions (three phishing, two passwords, two social
++ * engineering) so the pre-assessment is quick for older learners.
++ * IDs match the server question bank so server-side grading lines up.
+  */
+ export interface QuizQuestion {
+   id: number;
+@@ -24,12 +24,38 @@ export const quizQuestions: QuizQuestion[] = [
+     options: [
+       'Click the link in the email to secure your account immediately',
+       'Reply to the email asking for more details',
+-      "Go directly to Amazon's website by typing the address in your browser",
++      'Go directly to Amazon\'s website by typing the address in your browser',
+       'Forward the email to your friends to warn them',
+     ],
+     correctAnswer: 2,
+     explanation: 'Always go directly to a website by typing the address yourself rather than clicking links in emails. Legitimate companies will never use Gmail addresses for security alerts.',
+   },
++  {
++    id: 3,
++    topic: 'phishing',
++    question: 'An email says "Your account will be deleted in 24 hours unless you verify your details NOW." This is likely:',
++    options: [
++      'A genuine warning you should act on quickly',
++      'A phishing attempt using urgency to pressure you',
++      'A routine security check from the company',
++      'An automated system message that can be ignored',
++    ],
++    correctAnswer: 1,
++    explanation: 'Creating a false sense of urgency is one of the most common phishing tactics. Legitimate companies rarely threaten immediate account deletion and will never pressure you to act within hours.',
++  },
++  {
++    id: 4,
++    topic: 'phishing',
++    question: 'You hover over a link in an email and see it leads to "http://bankofireland.secure-login.xyz". Is this safe?',
++    options: [
++      'Yes, because it contains "bankofireland" in the address',
++      'Yes, because it says "secure" in the address',
++      'No, because the actual domain is "secure-login.xyz", not Bank of Ireland',
++      'No, because it uses "http" instead of "https"',
++    ],
++    correctAnswer: 2,
++    explanation: 'The actual domain is determined by what comes just before the first slash. Here, "secure-login.xyz" is the real domain, and "bankofireland" is just a subdomain used to trick you.',
++  },
+   {
+     id: 6,
+     topic: 'passwords',
+@@ -43,6 +69,19 @@ export const quizQuestions: QuizQuestion[] = [
+     correctAnswer: 1,
+     explanation: 'Long passphrases made of random words are extremely strong because their length makes them nearly impossible to brute-force, while still being memorable.',
+   },
++  {
++    id: 8,
++    topic: 'passwords',
++    question: 'What is the main benefit of using a password manager?',
++    options: [
++      'It makes your computer run faster',
++      'It lets you use one strong unique password for every account without memorising them all',
++      'It prevents all types of hacking',
++      'It automatically changes your passwords every day',
++    ],
++    correctAnswer: 1,
++    explanation: 'A password manager stores unique, strong passwords for every account so you only need to remember one master password.',
++  },
+   {
+     id: 10,
+     topic: 'social-engineering',
+@@ -56,4 +95,17 @@ export const quizQuestions: QuizQuestion[] = [
+     correctAnswer: 2,
+     explanation: 'Never give personal information to someone who contacts you. Always hang up and call the organisation directly using a number you trust.',
+   },
++  {
++    id: 11,
++    topic: 'social-engineering',
++    question: 'A text message says "Hi Gran, I\'ve lost my phone and I\'m using a friend\'s. Can you send me €200 for an emergency?" What is the safest response?',
++    options: [
++      'Send the money immediately because your grandchild might be in danger',
++      'Ask them a personal question only your real grandchild would know',
++      'Call your grandchild on their usual number to verify the message',
++      'Reply asking what the emergency is',
++    ],
++    correctAnswer: 2,
++    explanation: 'The safest approach is always to verify through a separate, trusted channel. Call your grandchild on their normal number.',
++  },
+ ];

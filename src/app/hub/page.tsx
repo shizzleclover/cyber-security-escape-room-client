@@ -10,8 +10,14 @@ import { getLocalQuiz, markLocalQuizSynced } from '@/lib/quizLocal';
 import { getLocalScores, getLocalProgress } from '@/lib/progressLocal';
 import { 
   Mail, Lock, Users, ArrowRight, CheckCircle2, 
-  Clock, Trophy, Sparkles, Play
+  Clock, Trophy, Sparkles, Play, Shield, Target, BookOpen
 } from 'lucide-react';
+
+const DYNAMIC_ICONS: Record<string, any> = {
+  Shield,
+  Target,
+  BookOpen,
+};
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
@@ -79,6 +85,7 @@ function HubContent() {
   const { user } = useAuth();
   const router = useRouter();
   const [progress, setProgress] = useState<RoomProgressData[]>([]);
+  const [dynamicRooms, setDynamicRooms] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -118,6 +125,15 @@ function HubContent() {
           // rooms finished as a guest (or before a slow server save landed).
           setProgress(mergeLocalProgress(apiProgress));
         }
+        
+        // Fetch dynamic custom rooms
+        try {
+          const dynamicRes: any = await api.get('/rooms');
+          setDynamicRooms(dynamicRes.data?.rooms || []);
+        } catch {
+          setDynamicRooms([]);
+        }
+
       } catch {
         // Not signed in / API unreachable — show progress from local storage.
         setProgress(mergeLocalProgress([]));
@@ -164,10 +180,23 @@ function HubContent() {
       time: '12 min',
       href: '/rooms/social-engineering',
     },
+    ...dynamicRooms.map(r => ({
+      id: r.roomId,
+      icon: DYNAMIC_ICONS[r.icon] || Shield,
+      title: r.title,
+      description: r.description,
+      accent: 'bg-blue-50 text-blue-600 border-blue-100',
+      challenges: 'Custom',
+      time: 'Custom',
+      href: `/rooms/custom/${r.roomId}`,
+      isCustom: true,
+    }))
   ];
 
+  // For the progress calculation, we now have more than 3 rooms potentially.
+  const totalRooms = 3 + dynamicRooms.length;
   const completedCount = progress.filter((p) => p.status === 'completed').length;
-  const allComplete = completedCount === 3;
+  const allComplete = completedCount >= totalRooms;
 
   return (
     <main className="relative overflow-hidden min-h-screen">
@@ -200,12 +229,12 @@ function HubContent() {
             <motion.div variants={fadeUp} custom={1} className="mb-12">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-sm text-zinc-500">Overall Progress</span>
-                <span className="text-sm font-semibold text-zinc-900">{Math.round((completedCount / 3) * 100)}%</span>
+                <span className="text-sm font-semibold text-zinc-900">{Math.round((completedCount / totalRooms) * 100)}%</span>
               </div>
               <div className="h-2.5 rounded-full bg-zinc-100 overflow-hidden border border-zinc-200/50">
                 <motion.div
                   initial={{ width: 0 }}
-                  animate={{ width: `${(completedCount / 3) * 100}%` }}
+                  animate={{ width: `${(completedCount / totalRooms) * 100}%` }}
                   transition={{ duration: 1, delay: 0.5, type: 'spring' as const, stiffness: 100, damping: 20 }}
                   className="h-full rounded-full bg-zinc-900"
                 />
