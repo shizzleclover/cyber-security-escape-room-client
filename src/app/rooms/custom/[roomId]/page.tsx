@@ -70,8 +70,8 @@ export default function CustomRoomPage() {
       // Room completed
       const finalScore = score + (feedback?.correct ? 1 : 0);
       
-      saveLocalScore(roomId, finalScore, questions.length);
-      saveLocalProgress(roomId, 'completed', questions.length);
+      saveLocalScore({ roomId, score: finalScore, maxScore: questions.length, hintsUsed: 0, timeSpent: 300 });
+      saveLocalProgress(roomId, { status: 'completed', currentStep: questions.length });
 
       try {
         await api.post('/scores', { 
