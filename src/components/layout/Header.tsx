@@ -19,18 +19,17 @@ export default function Header() {
     setMobileMenuOpen(false);
   };
 
-  const navLinks = user
-    ? [
-        { href: '/hub', label: 'Rooms' },
-        { href: '/dashboard', label: 'Dashboard' },
-        { href: '/profile', label: 'Profile' },
-        { href: '/about', label: 'About' },
-        { href: '/resources', label: 'Resources' },
-      ]
-    : [
-        { href: '/about', label: 'About' },
-        { href: '/resources', label: 'Resources' },
-      ];
+  const navLinks = [
+    { href: '/hub', label: 'Rooms' },
+    { href: '/dashboard', label: 'Dashboard' },
+  ];
+  if (user) {
+    navLinks.push({ href: '/profile', label: 'Profile' });
+  }
+  navLinks.push(
+    { href: '/about', label: 'About' },
+    { href: '/resources', label: 'Resources' }
+  );
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-zinc-200/60">
