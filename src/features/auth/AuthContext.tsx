@@ -2,6 +2,8 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import api from '@/lib/api';
+import { getLocalScores } from '@/lib/progressLocal';
+import { getLocalQuiz, markLocalQuizSynced } from '@/lib/quizLocal';
 
 interface User {
   id: string;
@@ -40,6 +42,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         const response: any = await api.get('/auth/me');
         setUser(response.data.user);
+        syncLocalData();
       } catch {
         // Not authenticated
       } finally {
@@ -52,12 +55,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (email: string, password: string) => {
     const response: any = await api.post('/auth/login', { email, password });
     setUser(response.data.user);
+    syncLocalData();
     return response.data.user as User;
   };
 
   const register = async (data: RegisterData) => {
     const response: any = await api.post('/auth/register', data);
     setUser(response.data.user);
+    syncLocalData();
     return response.data.user as User;
   };
 
@@ -66,6 +71,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await api.post('/auth/logout');
     } catch {}
     setUser(null);
+  };
+
+  const syncLocalData = async () => {
+    try {
+      const preQuiz = getLocalQuiz('pre');
+      if (preQuiz && !preQuiz.synced) {
+        await api.post('/quiz', { type: 'pre', answers: preQuiz.answers || [] });
+        markLocalQuizSynced('pre');
+      }
+      const postQuiz = getLocalQuiz('post');
+      if (postQuiz && !postQuiz.synced) {
+        await api.post('/quiz', { type: 'post', answers: postQuiz.answers || [] });
+        markLocalQuizSynced('post');
+      }
+
+      const localScores = getLocalScores();
+      if (localScores.length > 0) {
+        for (const score of localScores) {
+          await api.post('/scores', {
+            roomId: score.roomId,
+            score: score.score,
+            maxScore: score.maxScore,
+            hintsUsed: score.hintsUsed,
+            timeSpent: score.timeSpent,
+          });
+        }
+        localStorage.removeItem('cyberescape:scores');
+        localStorage.removeItem('cyberescape:progress');
+      }
+    } catch (error) {
+      console.error("Failed to sync local data", error);
+    }
   };
 
   return (
