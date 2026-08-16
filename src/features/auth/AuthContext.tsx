@@ -77,31 +77,52 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const preQuiz = getLocalQuiz('pre');
       if (preQuiz && !preQuiz.synced) {
-        await api.post('/quiz', { type: 'pre', answers: preQuiz.answers || [] });
-        markLocalQuizSynced('pre');
+        try {
+          if (preQuiz.answers && preQuiz.answers.length > 0) {
+            await api.post('/quiz', { type: 'pre', answers: preQuiz.answers });
+          }
+          markLocalQuizSynced('pre');
+        } catch (e) {
+          console.error("Failed to sync preQuiz", e);
+        }
       }
+
       const postQuiz = getLocalQuiz('post');
       if (postQuiz && !postQuiz.synced) {
-        await api.post('/quiz', { type: 'post', answers: postQuiz.answers || [] });
-        markLocalQuizSynced('post');
+        try {
+          if (postQuiz.answers && postQuiz.answers.length > 0) {
+            await api.post('/quiz', { type: 'post', answers: postQuiz.answers });
+          }
+          markLocalQuizSynced('post');
+        } catch (e) {
+          console.error("Failed to sync postQuiz", e);
+        }
       }
 
       const localScores = getLocalScores();
       if (localScores.length > 0) {
+        let allSynced = true;
         for (const score of localScores) {
-          await api.post('/scores', {
-            roomId: score.roomId,
-            score: score.score,
-            maxScore: score.maxScore,
-            hintsUsed: score.hintsUsed,
-            timeSpent: score.timeSpent,
-          });
+          try {
+            await api.post('/scores', {
+              roomId: score.roomId,
+              score: score.score,
+              maxScore: score.maxScore,
+              hintsUsed: score.hintsUsed,
+              timeSpent: score.timeSpent,
+            });
+          } catch (e) {
+            console.error("Failed to sync score for room", score.roomId, e);
+            allSynced = false;
+          }
         }
-        localStorage.removeItem('cyberescape:scores');
-        localStorage.removeItem('cyberescape:progress');
+        if (allSynced) {
+          localStorage.removeItem('cyberescape:scores');
+          localStorage.removeItem('cyberescape:progress');
+        }
       }
     } catch (error) {
-      console.error("Failed to sync local data", error);
+      console.error("Failed to execute syncLocalData", error);
     }
   };
 
