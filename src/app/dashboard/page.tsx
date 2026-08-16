@@ -238,7 +238,7 @@ function DashboardContent() {
                 <div className="space-y-3">
                   {scores.map((scoreData, i) => {
                     const Icon = roomIcons[scoreData.roomId] || Target;
-                    const percentage = Math.round((scoreData.score / scoreData.maxScore) * 100);
+                    const percentage = Math.min(100, Math.round((scoreData.score / Math.max(1, scoreData.maxScore)) * 100));
                     const minutes = Math.floor(scoreData.timeSpent / 60);
                     return (
                       <motion.div
