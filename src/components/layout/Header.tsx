@@ -2,15 +2,13 @@
 
 import Link from 'next/link';
 import { useAuth } from '@/features/auth/AuthContext';
-import { useAudio } from '@/features/audio/AudioContext';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Shield, User, LogOut, Menu, X, Music, VolumeX, LayoutDashboard, ArrowRight } from 'lucide-react';
+import { Shield, User, LogOut, Menu, X, LayoutDashboard, ArrowRight } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 
 export default function Header() {
   const { user, logout } = useAuth();
-  const { isPlaying, toggleAudio } = useAudio();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
 
@@ -69,21 +67,6 @@ export default function Header() {
 
         {/* Right Action Section */}
         <div className="hidden md:flex items-center gap-4">
-          <button
-            onClick={toggleAudio}
-            className="text-zinc-400 hover:text-zinc-700 transition-colors flex items-center justify-center w-8 h-8 rounded-full hover:bg-zinc-200/60"
-            aria-label="Toggle ambient sound"
-            title={isPlaying ? 'Mute sound effects' : 'Sound effects active'}
-          >
-            {isPlaying ? (
-              <Music strokeWidth={2} className="w-4 h-4 text-zinc-900 animate-pulse" />
-            ) : (
-              <VolumeX strokeWidth={1.5} className="w-4 h-4" />
-            )}
-          </button>
-
-          <div className="w-px h-4 bg-zinc-200" />
-
           {user ? (
             <>
               {user.role === 'admin' && (
