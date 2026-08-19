@@ -57,29 +57,47 @@ body {
    ACCESSIBILITY
    ============================================ */
 
-/* High Contrast Mode */
+/* High Contrast Mode — WCAG AAA Compliant (Crisp White on Pure Black) */
 html.high-contrast body {
   background-color: #000000 !important;
-  color: #FFFF00 !important;
+  color: #FFFFFF !important;
 }
 
 html.high-contrast * {
-  border-color: #FFFF00 !important;
+  border-color: #FFFFFF !important;
 }
 
 html.high-contrast .bg-white,
 html.high-contrast .bg-zinc-50,
 html.high-contrast .bg-zinc-100,
-html.high-contrast .bg-zinc-900 {
+html.high-contrast .bg-zinc-200,
+html.high-contrast .bg-zinc-800,
+html.high-contrast .bg-zinc-900,
+html.high-contrast [class*="bg-"] {
   background-color: #000000 !important;
-  color: #FFFF00 !important;
+  color: #FFFFFF !important;
 }
 
-html.high-contrast .text-zinc-500,
 html.high-contrast .text-zinc-400,
+html.high-contrast .text-zinc-500,
 html.high-contrast .text-zinc-600,
-html.high-contrast .text-zinc-900 {
-  color: #FFFF00 !important;
+html.high-contrast .text-zinc-700,
+html.high-contrast .text-zinc-800,
+html.high-contrast .text-zinc-900,
+html.high-contrast [class*="text-"] {
+  color: #FFFFFF !important;
+}
+
+html.high-contrast a,
+html.high-contrast button {
+  text-decoration: underline !important;
+  text-underline-offset: 3px !important;
+}
+
+html.high-contrast button:hover,
+html.high-contrast a:hover {
+  background-color: #FFFFFF !important;
+  color: #000000 !important;
 }
 
 /* Reduced Motion Mode (CSS fallbacks for non-framer animations) */

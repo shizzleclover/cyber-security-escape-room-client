@@ -11,6 +11,7 @@ import {
   CheckCircle2, XCircle, ArrowRight, Trophy, 
   Brain, Sparkles, Target
 } from 'lucide-react';
+import PostInterviewForm from '@/components/evaluation/PostInterviewForm';
 
 const shakeAnimation = {
   x: [-10, 10, -10, 10, -5, 5, 0],
@@ -164,54 +165,79 @@ function QuizContent() {
   // Results screen
   if (quizComplete) {
     return (
-      <main className="relative min-h-screen flex items-center justify-center px-6 py-12 bg-[#F7F7F8]">
+      <main className="relative min-h-screen flex items-center justify-center px-6 py-16 bg-[#FAF9F5]">
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
+          initial={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6, type: 'spring', stiffness: 100, damping: 20 }}
-          className="relative w-full max-w-lg"
+          transition={{ duration: 0.5, ease: 'easeOut' }}
+          className="relative w-full max-w-2xl space-y-8 my-8"
         >
-          <div className="p-10 rounded-2xl border border-zinc-200/80 bg-white shadow-sm text-center">
-            <Trophy strokeWidth={1.5} className="w-16 h-16 text-zinc-900 mx-auto mb-6" />
+          <div className="p-8 sm:p-10 rounded-2xl border border-zinc-200/80 bg-white shadow-sm text-center">
+            <div className="w-14 h-14 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center mx-auto mb-5 text-emerald-600">
+              <Trophy strokeWidth={1.75} className="w-7 h-7" />
+            </div>
 
-            <h2 className="text-3xl font-extrabold text-zinc-900 mb-2">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-zinc-900 mb-2">
               {quizType === 'pre' ? 'Pre-Assessment Complete' : 'Post-Assessment Complete'}
             </h2>
 
-            <p className="text-zinc-500 mb-8 text-[15px]">
+            <p className="text-zinc-500 mb-6 text-[15px]">
               You scored <span className="text-zinc-900 font-bold">{score}</span> out of{' '}
-              <span className="font-bold text-zinc-900">{totalQuestions}</span>
+              <span className="font-bold text-zinc-900">{totalQuestions}</span> ({percentage}%)
             </p>
 
             {/* Score visual */}
-            <div className="mb-8">
-              <div className="h-3 rounded-full bg-zinc-100 overflow-hidden">
+            <div className="mb-6">
+              <div className="h-3 rounded-full bg-zinc-100 overflow-hidden border border-zinc-200/60">
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${percentage}%` }}
-                  transition={{ duration: 1.2, delay: 0.3, type: 'spring', stiffness: 100, damping: 20 }}
-                  className="h-full rounded-full bg-zinc-900"
+                  transition={{ duration: 1, delay: 0.2, ease: 'easeOut' }}
+                  className="h-full rounded-full bg-emerald-600"
                 />
               </div>
             </div>
 
-            <p className="text-zinc-500 text-[15px] mb-8 leading-relaxed">
+            <p className="text-zinc-600 text-sm mb-6 leading-relaxed max-w-md mx-auto">
               {quizType === 'pre'
-                ? 'This is your starting point. The interactive rooms will help you build your digital confidence.'
-                : 'Head to your dashboard to see how much you have grown since the pre-assessment.'}
+                ? 'This is your baseline diagnostic score. Head into the escape rooms to build your reflexes.'
+                : 'Great job! Your post-assessment score is now recorded on your progress dashboard.'}
             </p>
 
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={handleSubmitQuiz}
-              disabled={submitting}
-              className="group w-full inline-flex items-center justify-center gap-2 py-4 text-[15px] font-bold text-white rounded-full bg-zinc-900 hover:bg-zinc-800 shadow-sm transition-all duration-300 disabled:opacity-50"
-            >
-              {submitting ? 'Saving your answers...' : quizType === 'pre' ? 'Continue to Rooms' : 'View My Results'}
-              <ArrowRight strokeWidth={2} className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </motion.button>
+            {quizType === 'pre' && (
+              <motion.button
+                whileHover={{ scale: 1.01 }}
+                whileTap={{ scale: 0.99 }}
+                onClick={handleSubmitQuiz}
+                disabled={submitting}
+                className="w-full inline-flex items-center justify-center gap-2 py-3.5 text-sm font-bold text-white rounded-full bg-zinc-900 hover:bg-zinc-800 shadow-sm transition-all disabled:opacity-50"
+              >
+                {submitting ? 'Saving baseline...' : 'Continue to Escape Rooms'}
+                <ArrowRight strokeWidth={2} className="w-4 h-4" />
+              </motion.button>
+            )}
           </div>
+
+          {/* Post-Interview Evaluation Questions (Only for Post-Assessment) */}
+          {quizType === 'post' && (
+            <div className="space-y-6">
+              <PostInterviewForm
+                title="Post-Experience Evaluation"
+                subtitle="Please take a moment to answer these 3 quick questions to help us evaluate the impact of this platform."
+              />
+
+              <div className="text-center pt-2">
+                <button
+                  onClick={handleSubmitQuiz}
+                  disabled={submitting}
+                  className="inline-flex items-center justify-center gap-2 px-8 py-4 text-sm font-bold text-white rounded-full bg-zinc-900 hover:bg-zinc-800 shadow-md hover:shadow-lg transition-all"
+                >
+                  <span>Continue to Dashboard &amp; Certificate</span>
+                  <ArrowRight strokeWidth={2} className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          )}
         </motion.div>
       </main>
     );

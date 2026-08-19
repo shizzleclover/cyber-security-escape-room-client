@@ -12,6 +12,7 @@ import {
   ArrowRight, BookOpen, BarChart3, Sparkles,
   Mail, Lock, Users, Crown, Medal, Award
 } from 'lucide-react';
+import PostInterviewForm from '@/components/evaluation/PostInterviewForm';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -395,6 +396,16 @@ function DashboardContent() {
                 </Link>
               </div>
             </motion.div>
+
+            {/* Post-Interview Evaluation */}
+            {postQuiz && (
+              <motion.div variants={fadeUp} custom={3.5} className="mt-12">
+                <PostInterviewForm
+                  title="Research Post-Interview Questions"
+                  subtitle="Help evaluate the platform by answering these 3 quick questions."
+                />
+              </motion.div>
+            )}
           </motion.div>
         </div>
       </section>

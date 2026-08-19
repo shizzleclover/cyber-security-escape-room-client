@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 import { useAuth } from '@/features/auth/AuthContext';
 import api from '@/lib/api';
 import { Shield, Award, Printer, ArrowLeft } from 'lucide-react';
+import PostInterviewForm from '@/components/evaluation/PostInterviewForm';
 
 const ROOM_NAMES: Record<string, string> = {
   phishing: 'Phishing Detection',
@@ -169,6 +170,14 @@ function CertificateContent() {
           <ArrowLeft strokeWidth={2} className="w-4 h-4" />
           Dashboard
         </button>
+      </div>
+
+      {/* Post-Interview Questions (hidden when printing) */}
+      <div className="no-print w-full max-w-2xl mt-12 mb-8">
+        <PostInterviewForm
+          title="Post-Interview Evaluation"
+          subtitle="Your feedback helps evaluate this research project on cybersecurity escape rooms in Ireland."
+        />
       </div>
     </main>
   );
