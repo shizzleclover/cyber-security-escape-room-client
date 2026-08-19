@@ -112,15 +112,15 @@ function DashboardContent() {
   };
 
   const roomColors: Record<string, string> = {
-    phishing: 'from-rose-400 to-orange-400',
-    passwords: 'from-zinc-600 to-zinc-800',
-    'social-engineering': 'from-emerald-400 to-teal-500',
+    phishing: 'from-rose-500 to-orange-500',
+    passwords: 'from-violet-500 to-purple-600',
+    'social-engineering': 'from-emerald-500 to-teal-600',
   };
 
   const roomBarColors: Record<string, string> = {
-    phishing: 'bg-rose-500',
-    passwords: 'bg-zinc-800',
-    'social-engineering': 'bg-emerald-600',
+    phishing: 'bg-gradient-to-r from-rose-500 to-orange-500',
+    passwords: 'bg-gradient-to-r from-violet-500 to-purple-600',
+    'social-engineering': 'bg-gradient-to-r from-emerald-500 to-teal-600',
   };
 
   const completedRooms = scores.length;
@@ -165,42 +165,42 @@ function DashboardContent() {
 
             {/* Stats Grid */}
             <motion.div variants={fadeUp} custom={1} className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
-              <div className="p-6 rounded-xl border border-zinc-200/80 bg-white shadow-sm">
+              <div className="p-6 rounded-2xl border border-zinc-200/40 bg-white/70 backdrop-blur-sm shadow-sm hover:shadow-md transition-shadow duration-300">
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="w-9 h-9 rounded-lg bg-zinc-100 border border-zinc-200 flex items-center justify-center">
-                    <Target strokeWidth={1.5} className="w-4 h-4 text-zinc-500" />
+                  <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center">
+                    <Target strokeWidth={1.25} className="w-5 h-5 text-blue-600" />
                   </div>
-                  <span className="text-sm text-zinc-500">Pre-Assessment</span>
+                  <span className="text-sm text-zinc-500 font-medium tracking-wide">Pre-Assessment</span>
                 </div>
-                <div className="text-3xl font-bold text-zinc-900">
+                <div className="text-3xl font-bold text-zinc-900 mt-2">
                   {preQuiz ? `${preQuiz.score}/${preQuiz.totalQuestions}` : '--'}
                 </div>
                 <p className="text-xs text-zinc-400 mt-1">Starting knowledge</p>
               </div>
 
-              <div className="p-6 rounded-xl border border-zinc-200/80 bg-white shadow-sm">
+              <div className="p-6 rounded-2xl border border-zinc-200/40 bg-white/70 backdrop-blur-sm shadow-sm hover:shadow-md transition-shadow duration-300">
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="w-9 h-9 rounded-lg bg-zinc-100 border border-zinc-200 flex items-center justify-center">
-                    <Trophy strokeWidth={1.5} className="w-4 h-4 text-zinc-600" />
+                  <div className="w-10 h-10 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center">
+                    <Trophy strokeWidth={1.25} className="w-5 h-5 text-amber-600" />
                   </div>
-                  <span className="text-sm text-zinc-500">Post-Assessment</span>
+                  <span className="text-sm text-zinc-500 font-medium tracking-wide">Post-Assessment</span>
                 </div>
-                <div className="text-3xl font-bold text-zinc-900">
+                <div className="text-3xl font-bold text-zinc-900 mt-2">
                   {postQuiz ? `${postQuiz.score}/${postQuiz.totalQuestions}` : '--'}
                 </div>
                 <p className="text-xs text-zinc-400 mt-1">After completing rooms</p>
               </div>
 
-              <div className="p-6 rounded-xl border border-zinc-200/80 bg-white shadow-sm">
+              <div className="p-6 rounded-2xl border border-zinc-200/40 bg-white/70 backdrop-blur-sm shadow-sm hover:shadow-md transition-shadow duration-300">
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="w-9 h-9 rounded-lg bg-emerald-50 border border-emerald-200 flex items-center justify-center">
-                    <TrendingUp strokeWidth={1.5} className="w-4 h-4 text-emerald-600" />
+                  <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center">
+                    <TrendingUp strokeWidth={1.25} className="w-5 h-5 text-emerald-600" />
                   </div>
-                  <span className="text-sm text-zinc-500">Improvement</span>
+                  <span className="text-sm text-zinc-500 font-medium tracking-wide">Improvement</span>
                 </div>
-                <div className="text-3xl font-bold">
+                <div className="text-3xl font-bold mt-2">
                   {improvement !== null ? (
-                    <span className={improvement > 0 ? 'text-emerald-700' : 'text-zinc-900'}>
+                    <span className={improvement > 0 ? 'text-emerald-600' : 'text-zinc-900'}>
                       {improvement > 0 ? '+' : ''}{improvement}
                     </span>
                   ) : <span className="text-zinc-900">--</span>}
@@ -212,14 +212,14 @@ function DashboardContent() {
             {/* Improvement Banner */}
             {improvement !== null && improvement > 0 && (
               <motion.div variants={fadeUp} custom={1.5} className="mb-10">
-                <div className="p-6 rounded-xl border border-emerald-200 bg-emerald-50/70">
+                <div className="p-6 rounded-2xl border border-emerald-100 bg-emerald-50/50">
                   <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 rounded-xl bg-emerald-100 border border-emerald-200 flex items-center justify-center">
-                      <Sparkles strokeWidth={1.5} className="w-7 h-7 text-emerald-600" />
+                    <div className="w-12 h-12 rounded-full bg-white border border-emerald-100 flex items-center justify-center">
+                      <Sparkles strokeWidth={1.25} className="w-5 h-5 text-emerald-600" />
                     </div>
                     <div>
-                      <p className="text-2xl font-bold text-emerald-700">+{improvement} points improvement</p>
-                      <p className="text-sm text-zinc-500 mt-1">
+                      <p className="text-xl font-bold text-emerald-800">+{improvement} points improvement</p>
+                      <p className="text-sm text-emerald-600/80 mt-0.5">
                         Your knowledge grew from {preQuiz?.score}/{preQuiz?.totalQuestions} to {postQuiz?.score}/{postQuiz?.totalQuestions} after the escape rooms.
                       </p>
                     </div>
@@ -246,18 +246,18 @@ function DashboardContent() {
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 0.3 + i * 0.1 }}
-                        className="flex items-center gap-4 p-5 rounded-xl border border-zinc-200/80 bg-white shadow-sm"
+                        className="flex items-center gap-5 p-5 rounded-2xl border border-zinc-200/40 bg-white/70 backdrop-blur-sm shadow-sm hover:shadow-md transition-shadow duration-300"
                       >
-                        <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${roomColors[scoreData.roomId] || 'from-zinc-400 to-zinc-500'} flex items-center justify-center shadow-sm`}>
-                          <Icon strokeWidth={1.5} className="w-5 h-5 text-white" />
+                        <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${roomColors[scoreData.roomId] || 'from-zinc-400 to-zinc-500'} flex items-center justify-center shadow-sm`}>
+                          <Icon strokeWidth={1.5} className="w-6 h-6 text-white" />
                         </div>
                         <div className="flex-1">
                           <div className="flex items-center justify-between mb-2">
                             <div>
-                              <h3 className="text-sm font-semibold text-zinc-900">
+                              <h3 className="text-[15px] font-semibold text-zinc-900">
                                 {roomNames[scoreData.roomId] || scoreData.roomId}
                               </h3>
-                              <div className="flex items-center gap-3 text-xs text-zinc-400 mt-0.5">
+                              <div className="flex items-center gap-3 text-[13px] text-zinc-500 mt-0.5">
                                 <span>{minutes} min</span>
                                 <span>{scoreData.hintsUsed} hints</span>
                               </div>
@@ -269,22 +269,22 @@ function DashboardContent() {
                               initial={{ width: 0 }}
                               animate={{ width: `${percentage}%` }}
                               transition={{ duration: 0.8, delay: 0.5 + i * 0.1 }}
-                              className={`h-full rounded-full ${roomBarColors[scoreData.roomId] || 'bg-zinc-700'}`}
+                              className={`h-full rounded-full ${roomBarColors[scoreData.roomId] || 'bg-blue-600'}`}
                             />
                           </div>
                         </div>
-                        <CheckCircle2 strokeWidth={1.5} className="w-5 h-5 text-emerald-600 flex-shrink-0" />
+                        <CheckCircle2 strokeWidth={1.5} className="w-5 h-5 text-blue-600 flex-shrink-0 ml-2" />
                       </motion.div>
                     );
                   })}
                 </div>
               ) : (
-                <div className="p-8 rounded-xl border border-zinc-200/80 bg-white shadow-sm text-center">
-                  <Sparkles strokeWidth={1.5} className="w-8 h-8 text-zinc-300 mx-auto mb-3" />
+                <div className="p-8 rounded-2xl border border-zinc-200/40 bg-white/60 backdrop-blur-sm shadow-sm text-center">
+                  <Sparkles strokeWidth={1.25} className="w-8 h-8 text-zinc-400 mx-auto mb-3" />
                   <p className="text-zinc-500 text-sm">No room scores yet. Complete a room to see your results here.</p>
                   <Link
                     href="/hub"
-                    className="inline-flex items-center gap-2 mt-4 text-sm text-zinc-900 underline hover:text-zinc-600 transition-colors"
+                    className="inline-flex items-center gap-2 mt-4 text-sm font-medium text-zinc-900 underline hover:text-blue-600 transition-colors"
                   >
                     Go to rooms <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
@@ -295,14 +295,14 @@ function DashboardContent() {
             {/* Leaderboard Section */}
             <motion.div variants={fadeUp} custom={2.5} className="mb-10">
               <h2 className="text-xl font-semibold text-zinc-900 mb-5 flex items-center gap-2">
-                <Crown className="w-5 h-5 text-amber-500" />
+                <Crown className="w-5 h-5 text-blue-600" />
                 Global Leaderboard
               </h2>
-              <div className="bg-white rounded-xl border border-zinc-200/80 shadow-sm overflow-hidden">
+              <div className="bg-white/60 backdrop-blur-sm rounded-2xl border border-zinc-200/40 shadow-sm overflow-hidden">
                 {leaderboard.length > 0 ? (
-                  <div className="divide-y divide-zinc-100">
+                  <div className="divide-y divide-zinc-100/50">
                     {leaderboard.map((entry, idx) => (
-                      <div key={entry._id} className={`flex items-center gap-4 p-4 ${entry._id === user?.id ? 'bg-amber-50/30' : ''}`}>
+                      <div key={entry._id} className={`flex items-center gap-4 p-4 ${entry._id === user?.id ? 'bg-blue-50/40' : ''}`}>
                         <div className="w-8 font-bold text-zinc-400 text-center flex-shrink-0">
                           {idx === 0 ? <Crown className="w-5 h-5 text-amber-500 mx-auto" /> : 
                            idx === 1 ? <Medal className="w-5 h-5 text-zinc-400 mx-auto" /> : 
@@ -338,58 +338,58 @@ function DashboardContent() {
                 {!allRoomsComplete && (
                   <Link
                     href="/hub"
-                    className="group flex items-center gap-4 p-5 rounded-xl border border-amber-200 bg-amber-50/70 hover:bg-amber-50 transition-all duration-300 shadow-sm"
+                    className="group flex items-center gap-4 p-5 rounded-2xl border border-zinc-200/40 bg-white/60 backdrop-blur-sm hover:bg-white hover:shadow-md transition-all duration-300 shadow-sm"
                   >
-                    <div className="w-10 h-10 rounded-lg bg-amber-100 border border-amber-200 flex items-center justify-center">
-                      <Target strokeWidth={1.5} className="w-5 h-5 text-amber-600" />
+                    <div className="w-12 h-12 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center">
+                      <Target strokeWidth={1.25} className="w-5 h-5 text-blue-600" />
                     </div>
                     <div className="flex-1">
-                      <h3 className="text-sm font-semibold text-zinc-900">Continue Rooms</h3>
-                      <p className="text-xs text-zinc-500">{3 - completedRooms} room{3 - completedRooms > 1 ? 's' : ''} remaining</p>
+                      <h3 className="text-[15px] font-semibold text-zinc-900">Continue Rooms</h3>
+                      <p className="text-[13px] text-zinc-500">{3 - completedRooms} room{3 - completedRooms > 1 ? 's' : ''} remaining</p>
                     </div>
-                    <ArrowRight strokeWidth={1.5} className="w-4 h-4 text-amber-600 group-hover:translate-x-1 transition-transform" />
+                    <ArrowRight strokeWidth={1.5} className="w-4 h-4 text-zinc-400 group-hover:translate-x-1 group-hover:text-blue-600 transition-all" />
                   </Link>
                 )}
                 {allRoomsComplete && !postQuiz && (
                   <Link
                     href="/quiz?type=post"
-                    className="group flex items-center gap-4 p-5 rounded-xl border border-zinc-300 bg-zinc-900 hover:bg-zinc-800 transition-all duration-300 shadow-sm"
+                    className="group flex items-center gap-4 p-5 rounded-2xl border border-blue-200 bg-blue-50/50 hover:bg-blue-50 hover:shadow-md transition-all duration-300 shadow-sm"
                   >
-                    <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center">
-                      <Trophy strokeWidth={1.5} className="w-5 h-5 text-white" />
+                    <div className="w-12 h-12 rounded-xl bg-white border border-blue-100 flex items-center justify-center">
+                      <Trophy strokeWidth={1.25} className="w-5 h-5 text-blue-600" />
                     </div>
                     <div className="flex-1">
-                      <h3 className="text-sm font-semibold text-white">Take Post-Assessment</h3>
-                      <p className="text-xs text-zinc-400">Measure your improvement</p>
+                      <h3 className="text-[15px] font-semibold text-zinc-900">Take Post-Assessment</h3>
+                      <p className="text-[13px] text-zinc-600">Measure your improvement</p>
                     </div>
-                    <ArrowRight strokeWidth={1.5} className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform" />
+                    <ArrowRight strokeWidth={1.5} className="w-4 h-4 text-blue-600 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 )}
                 {allRoomsComplete && postQuiz && (
                   <Link
                     href="/certificate"
-                    className="group flex items-center gap-4 p-5 rounded-xl border border-amber-200 bg-amber-50/70 hover:bg-amber-50 transition-all duration-300 shadow-sm"
+                    className="group flex items-center gap-4 p-5 rounded-2xl border border-zinc-200/40 bg-white/60 backdrop-blur-sm hover:bg-white hover:shadow-md transition-all duration-300 shadow-sm"
                   >
-                    <div className="w-10 h-10 rounded-lg bg-amber-100 border border-amber-200 flex items-center justify-center">
-                      <Award strokeWidth={1.5} className="w-5 h-5 text-amber-600" />
+                    <div className="w-12 h-12 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center">
+                      <Award strokeWidth={1.25} className="w-5 h-5 text-blue-600" />
                     </div>
                     <div className="flex-1">
-                      <h3 className="text-sm font-semibold text-zinc-900">View Certificate</h3>
-                      <p className="text-xs text-zinc-500">Your completion certificate is ready</p>
+                      <h3 className="text-[15px] font-semibold text-zinc-900">View Certificate</h3>
+                      <p className="text-[13px] text-zinc-500">Your completion certificate is ready</p>
                     </div>
-                    <ArrowRight strokeWidth={1.5} className="w-4 h-4 text-amber-600 group-hover:translate-x-1 transition-transform" />
+                    <ArrowRight strokeWidth={1.5} className="w-4 h-4 text-zinc-400 group-hover:text-blue-600 group-hover:translate-x-1 transition-all" />
                   </Link>
                 )}
                 <Link
                   href="/resources"
-                  className="group flex items-center gap-4 p-5 rounded-xl border border-zinc-200/80 bg-white hover:shadow-sm transition-all duration-300 shadow-sm"
+                  className="group flex items-center gap-4 p-5 rounded-2xl border border-zinc-200/40 bg-white/60 backdrop-blur-sm hover:bg-white hover:shadow-md transition-all duration-300 shadow-sm"
                 >
-                  <div className="w-10 h-10 rounded-lg bg-zinc-100 border border-zinc-200 flex items-center justify-center">
-                    <BookOpen strokeWidth={1.5} className="w-5 h-5 text-zinc-600" />
+                  <div className="w-12 h-12 rounded-xl bg-zinc-50 border border-zinc-100 flex items-center justify-center">
+                    <BookOpen strokeWidth={1.25} className="w-5 h-5 text-zinc-600" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-sm font-semibold text-zinc-900">Continue Learning</h3>
-                    <p className="text-xs text-zinc-500">Explore trusted resources</p>
+                    <h3 className="text-[15px] font-semibold text-zinc-900">Continue Learning</h3>
+                    <p className="text-[13px] text-zinc-500">Explore trusted resources</p>
                   </div>
                   <ArrowRight strokeWidth={1.5} className="w-4 h-4 text-zinc-400 group-hover:translate-x-1 transition-transform" />
                 </Link>

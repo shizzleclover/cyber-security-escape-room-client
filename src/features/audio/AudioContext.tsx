@@ -56,11 +56,11 @@ export const AudioProvider = ({ children }: { children: React.ReactNode }) => {
   const ctxRef = useRef<globalThis.AudioContext | null>(null);
 
   useEffect(() => {
-    // Ambient background track
-    // Pointing to a local file avoids Pixabay CORS/hotlinking 403 errors.
-    audioRef.current = new Audio('/audio/ambient.mp3');
-    audioRef.current.loop = true;
-    audioRef.current.volume = 0.2; // Keep it ambient and low
+    // Ambient background track is disabled as the asset is not present.
+    // audioRef.current = new Audio('/audio/ambient.mp3');
+    // audioRef.current.loop = true;
+    // audioRef.current.volume = 0.2; // Keep it ambient and low
+    audioRef.current = null;
 
     // Restore the saved sound-effects preference.
     try {
