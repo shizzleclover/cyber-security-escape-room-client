@@ -58,46 +58,114 @@ body {
    ============================================ */
 
 /* High Contrast Mode — WCAG AAA Compliant (Crisp White on Pure Black) */
-html.high-contrast body {
+html.high-contrast {
+  color-scheme: dark !important;
+}
+
+html.high-contrast body,
+html.high-contrast main,
+html.high-contrast header,
+html.high-contrast footer,
+html.high-contrast section {
   background-color: #000000 !important;
   color: #FFFFFF !important;
 }
 
-html.high-contrast * {
-  border-color: #FFFFFF !important;
-}
-
+/* Card & Surface Containers */
 html.high-contrast .bg-white,
 html.high-contrast .bg-zinc-50,
 html.high-contrast .bg-zinc-100,
 html.high-contrast .bg-zinc-200,
 html.high-contrast .bg-zinc-800,
 html.high-contrast .bg-zinc-900,
-html.high-contrast [class*="bg-"] {
+html.high-contrast .bg-slate-900,
+html.high-contrast .bg-slate-950,
+html.high-contrast [class*="bg-emerald-"],
+html.high-contrast [class*="bg-blue-"],
+html.high-contrast [class*="bg-rose-"],
+html.high-contrast [class*="bg-amber-"] {
+  background-color: #000000 !important;
+  background-image: none !important;
+}
+
+/* Crisp 2px High Contrast Borders */
+html.high-contrast div,
+html.high-contrast section,
+html.high-contrast article,
+html.high-contrast aside {
+  border-color: #FFFFFF !important;
+}
+
+/* All Text Elements Guaranteed White */
+html.high-contrast h1,
+html.high-contrast h2,
+html.high-contrast h3,
+html.high-contrast h4,
+html.high-contrast h5,
+html.high-contrast h6,
+html.high-contrast p,
+html.high-contrast span,
+html.high-contrast li,
+html.high-contrast label,
+html.high-contrast strong,
+html.high-contrast b,
+html.high-contrast em {
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+}
+
+/* Form Controls */
+html.high-contrast input,
+html.high-contrast textarea,
+html.high-contrast select {
   background-color: #000000 !important;
   color: #FFFFFF !important;
+  border: 2px solid #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
 }
 
-html.high-contrast .text-zinc-400,
-html.high-contrast .text-zinc-500,
-html.high-contrast .text-zinc-600,
-html.high-contrast .text-zinc-700,
-html.high-contrast .text-zinc-800,
-html.high-contrast .text-zinc-900,
-html.high-contrast [class*="text-"] {
-  color: #FFFFFF !important;
+html.high-contrast input::placeholder,
+html.high-contrast textarea::placeholder {
+  color: #A1A1AA !important;
+  -webkit-text-fill-color: #A1A1AA !important;
 }
 
-html.high-contrast a,
-html.high-contrast button {
+/* Links */
+html.high-contrast a {
+  color: #60A5FA !important;
   text-decoration: underline !important;
   text-underline-offset: 3px !important;
 }
 
-html.high-contrast button:hover,
 html.high-contrast a:hover {
+  color: #FFFFFF !important;
+}
+
+/* Buttons */
+html.high-contrast button {
+  border: 2px solid #FFFFFF !important;
+  background-color: #000000 !important;
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+}
+
+html.high-contrast button:hover,
+html.high-contrast button:focus {
   background-color: #FFFFFF !important;
   color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+  outline: 3px solid #60A5FA !important;
+  outline-offset: 2px !important;
+}
+
+html.high-contrast button:hover * {
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+}
+
+/* SVGs / Icons */
+html.high-contrast svg {
+  color: inherit !important;
 }
 
 /* Reduced Motion Mode (CSS fallbacks for non-framer animations) */

@@ -8,6 +8,7 @@ import {
   CheckCircle2, ArrowRight, Shield, Mail, Lock, 
   Users, Lightbulb
 } from 'lucide-react';
+import PostInterviewForm from '@/components/evaluation/PostInterviewForm';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -191,6 +192,14 @@ function DebriefContent() {
                   </motion.div>
                 ))}
               </div>
+            </motion.div>
+
+            {/* Post-Interview Evaluation Form */}
+            <motion.div variants={fadeUp} custom={2.5} className="mb-12">
+              <PostInterviewForm
+                title="Post-Room Experience Evaluation"
+                subtitle="Please take a moment to answer these 3 quick questions to help us evaluate the platform."
+              />
             </motion.div>
 
             {/* Navigation */}
