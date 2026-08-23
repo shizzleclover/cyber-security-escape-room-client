@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useAudio } from '@/features/audio/AudioContext';
 import api from '@/lib/api';
 import { saveLocalScore, saveLocalProgress } from '@/lib/progressLocal';
 import { 
@@ -50,7 +49,6 @@ export default function PhishingRoomPage() {
 
 function PhishingRoomContent() {
   const router = useRouter();
-  const { playSound } = useAudio();
   const [emails, setEmails] = useState<Email[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -90,11 +88,9 @@ function PhishingRoomContent() {
       setFeedback(result);
       if (result.correct) {
         setScore((prev) => prev + 1);
-        playSound('correct');
       } else {
         setShake(true);
         setTimeout(() => setShake(false), 500);
-        playSound('wrong');
       }
     } catch {
       // Fallback
@@ -113,7 +109,6 @@ function PhishingRoomContent() {
 
   const handleRoomComplete = async () => {
     const timeSpent = Math.round((Date.now() - startTime) / 1000);
-    playSound('complete');
     setRoomComplete(true);
     
     // Fallback saves
@@ -129,14 +124,13 @@ function PhishingRoomContent() {
   const handleHint = () => {
     if (!showHint) {
       setHintsUsed((prev) => prev + 1);
-      playSound('hint');
     }
     setShowHint(true);
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F7F7F8]">
+      <div className="min-h-screen flex items-center justify-center bg-[#FAF9F5]">
         <div className="w-10 h-10 border-2 border-zinc-400 border-t-zinc-900 rounded-full animate-spin" />
       </div>
     );
@@ -211,7 +205,7 @@ function PhishingRoomContent() {
 
   if (!currentEmail) {
     return (
-      <main className="min-h-screen flex items-center justify-center px-6 bg-[#F7F7F8]">
+      <main className="min-h-screen flex items-center justify-center px-6 bg-[#FAF9F5]">
         <div className="text-center">
           <Mail strokeWidth={1.5} className="w-12 h-12 text-zinc-400 mx-auto mb-4" />
           <p className="text-zinc-500">No emails loaded. Please check your connection and try again.</p>
@@ -221,7 +215,7 @@ function PhishingRoomContent() {
   }
 
   return (
-    <main className="relative min-h-screen bg-[#F7F7F8] flex items-center justify-center">
+    <main className="relative min-h-screen bg-[#FAF9F5] flex items-center justify-center">
       <motion.div animate={shake ? shakeAnimation : {}} className="relative w-full max-w-4xl px-6 py-16">
         {/* Header */}
         <motion.div layout className="mb-8">

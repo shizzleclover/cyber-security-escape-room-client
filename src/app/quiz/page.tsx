@@ -4,7 +4,6 @@ import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { quizQuestions } from '@/features/quiz/quizData';
-import { useAudio } from '@/features/audio/AudioContext';
 import api from '@/lib/api';
 import { saveLocalQuiz, markLocalQuizSynced } from '@/lib/quizLocal';
 import { 
@@ -26,7 +25,7 @@ interface Answer {
 
 export default function QuizPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-[#F7F7F8]"><div className="w-10 h-10 border-2 border-zinc-400 border-t-zinc-900 rounded-full animate-spin" /></div>}>
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-[#FAF9F5]"><div className="w-10 h-10 border-2 border-zinc-400 border-t-zinc-900 rounded-full animate-spin" /></div>}>
       <QuizContent />
     </Suspense>
   );
@@ -35,7 +34,6 @@ export default function QuizPage() {
 function QuizContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { playSound } = useAudio();
   const quizType = (searchParams.get('type') as 'pre' | 'post') || 'pre';
 
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -113,7 +111,6 @@ function QuizContent() {
       setShake(true);
       setTimeout(() => setShake(false), 500);
     }
-    playSound(isCorrect ? 'correct' : 'wrong');
 
     setAnswers((prev) => [...prev, answer]);
     setShowFeedback(true);
@@ -125,7 +122,6 @@ function QuizContent() {
       setSelectedOption(null);
       setShowFeedback(false);
     } else {
-      playSound('complete');
       setQuizComplete(true);
     }
   };
@@ -156,7 +152,7 @@ function QuizContent() {
   // While validating access, show a spinner rather than flashing the quiz.
   if (checking) {
     return (
-      <main className="min-h-screen flex items-center justify-center bg-[#F7F7F8]">
+      <main className="min-h-screen flex items-center justify-center bg-[#FAF9F5]">
         <div className="w-10 h-10 border-2 border-zinc-400 border-t-zinc-900 rounded-full animate-spin" />
       </main>
     );
@@ -244,7 +240,7 @@ function QuizContent() {
   }
 
   return (
-    <main className="relative min-h-screen flex items-center justify-center px-6 py-12 bg-[#F7F7F8]">
+    <main className="relative min-h-screen flex items-center justify-center px-6 py-12 bg-[#FAF9F5]">
       <motion.div animate={shake ? shakeAnimation : {}} className="relative w-full max-w-2xl">
         {/* Header */}
         <motion.div layout className="mb-8">

@@ -1,6 +1,7 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 import api from '@/lib/api';
 import { getLocalScores } from '@/lib/progressLocal';
 import { getLocalQuiz, markLocalQuizSynced } from '@/lib/quizLocal';
@@ -30,47 +31,143 @@ interface RegisterData {
   digitalConfidence: number;
 }
 
+const AUTH_EVENT_KEY = 'cyberescape:auth_event';
+const PROTECTED_ROUTES = ['/hub', '/dashboard', '/profile', '/admin', '/rooms', '/certificate'];
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const handleSessionExpired = useCallback(() => {
+    setUser(null);
+    if (PROTECTED_ROUTES.some((route) => pathname.startsWith(route))) {
+      router.replace('/login');
+    }
+  }, [pathname, router]);
 
   // Check if user is already authenticated on mount
   useEffect(() => {
+    let isMounted = true;
+
     const checkAuth = async () => {
       try {
         const response: any = await api.get('/auth/me');
-        setUser(response.data.user);
-        syncLocalData();
+        if (isMounted) {
+          setUser(response.data.user);
+          syncLocalData();
+        }
       } catch {
-        // Not authenticated
+        if (isMounted) {
+          setUser(null);
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
     checkAuth();
-  }, []);
+
+    // 1. Cross-tab synchronization via BroadcastChannel
+    let authChannel: BroadcastChannel | null = null;
+    try {
+      if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
+        authChannel = new BroadcastChannel('cyberescape_auth_channel');
+        authChannel.onmessage = (event) => {
+          if (event.data?.type === 'LOGOUT') {
+            setUser(null);
+            handleSessionExpired();
+          } else if (event.data?.type === 'LOGIN') {
+            checkAuth();
+          }
+        };
+      }
+    } catch {}
+
+    // 2. Cross-tab fallback synchronization via StorageEvent
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === AUTH_EVENT_KEY && e.newValue) {
+        try {
+          const parsed = JSON.parse(e.newValue);
+          if (parsed.type === 'LOGOUT') {
+            setUser(null);
+            handleSessionExpired();
+          } else if (parsed.type === 'LOGIN') {
+            checkAuth();
+          }
+        } catch {}
+      }
+    };
+    window.addEventListener('storage', handleStorageChange);
+
+    // 3. API 401 session expiration event
+    const handleAuthExpiredEvent = () => {
+      setUser(null);
+      handleSessionExpired();
+    };
+    window.addEventListener('cyberescape:auth_expired', handleAuthExpiredEvent);
+
+    return () => {
+      isMounted = false;
+      if (authChannel) {
+        authChannel.close();
+      }
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('cyberescape:auth_expired', handleAuthExpiredEvent);
+    };
+  }, [handleSessionExpired]);
+
+  const broadcastAuthEvent = (type: 'LOGIN' | 'LOGOUT') => {
+    try {
+      localStorage.setItem(AUTH_EVENT_KEY, JSON.stringify({ type, timestamp: Date.now() }));
+    } catch {}
+
+    try {
+      if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
+        const channel = new BroadcastChannel('cyberescape_auth_channel');
+        channel.postMessage({ type, timestamp: Date.now() });
+        channel.close();
+      }
+    } catch {}
+  };
 
   const login = async (email: string, password: string) => {
     const response: any = await api.post('/auth/login', { email, password });
-    setUser(response.data.user);
+    const authenticatedUser = response.data.user as User;
+    setUser(authenticatedUser);
+    broadcastAuthEvent('LOGIN');
     syncLocalData();
-    return response.data.user as User;
+    return authenticatedUser;
   };
 
   const register = async (data: RegisterData) => {
     const response: any = await api.post('/auth/register', data);
-    setUser(response.data.user);
+    const registeredUser = response.data.user as User;
+    setUser(registeredUser);
+    broadcastAuthEvent('LOGIN');
     syncLocalData();
-    return response.data.user as User;
+    return registeredUser;
   };
 
   const logout = async () => {
     try {
       await api.post('/auth/logout');
     } catch {}
+
     setUser(null);
+    broadcastAuthEvent('LOGOUT');
+
+    // Clean up cached keys if necessary
+    try {
+      document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    } catch {}
+
+    // Navigate to home or login page immediately
+    router.replace('/');
   };
 
   const syncLocalData = async () => {
@@ -83,7 +180,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           }
           markLocalQuizSynced('pre');
         } catch (e) {
-          console.error("Failed to sync preQuiz", e);
+          console.error('Failed to sync preQuiz', e);
         }
       }
 
@@ -95,7 +192,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           }
           markLocalQuizSynced('post');
         } catch (e) {
-          console.error("Failed to sync postQuiz", e);
+          console.error('Failed to sync postQuiz', e);
         }
       }
 
@@ -112,7 +209,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               timeSpent: score.timeSpent,
             });
           } catch (e) {
-            console.error("Failed to sync score for room", score.roomId, e);
+            console.error('Failed to sync score for room', score.roomId, e);
             allSynced = false;
           }
         }
@@ -122,7 +219,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       }
     } catch (error) {
-      console.error("Failed to execute syncLocalData", error);
+      console.error('Failed to execute syncLocalData', error);
     }
   };
 

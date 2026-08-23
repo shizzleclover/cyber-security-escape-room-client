@@ -2,13 +2,11 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Settings, Type, ZoomIn, ZoomOut, Contrast, Play, Pause, X, Volume2, VolumeX } from 'lucide-react';
+import { Settings, Type, ZoomIn, ZoomOut, Contrast, Play, Pause, X } from 'lucide-react';
 import { useAccessibility } from '@/features/accessibility/AccessibilityContext';
-import { useAudio } from '@/features/audio/AudioContext';
 
 export default function AccessibilityToolbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const { soundEnabled, toggleSound, playSound } = useAudio();
   const {
     textSizeMultiplier,
     increaseTextSize,
@@ -16,14 +14,14 @@ export default function AccessibilityToolbar() {
     highContrast,
     toggleHighContrast,
     reduceMotion,
-    toggleReduceMotion
+    toggleReduceMotion,
   } = useAccessibility();
 
   return (
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 z-50 flex items-center justify-center gap-2 px-5 h-14 bg-zinc-900 text-white rounded-full shadow-lg hover:bg-zinc-800 transition-colors"
+        className="fixed bottom-6 right-6 z-50 flex items-center justify-center gap-2 px-5 h-14 bg-zinc-900 text-white rounded-full shadow-lg hover:bg-zinc-800 transition-colors border border-zinc-700"
         aria-label="Accessibility Options"
       >
         <Settings className="w-5 h-5" />
@@ -38,25 +36,25 @@ export default function AccessibilityToolbar() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsOpen(false)}
-              className="fixed inset-0 bg-black/20 z-50 backdrop-blur-sm"
+              className="fixed inset-0 bg-black/40 z-50 backdrop-blur-sm"
             />
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="fixed bottom-24 right-6 w-80 bg-white rounded-2xl shadow-xl border border-zinc-200 z-50 overflow-hidden"
+              className="fixed bottom-24 right-6 w-80 bg-white rounded-2xl shadow-2xl border border-zinc-200 z-50 overflow-hidden"
             >
               <div className="flex items-center justify-between p-4 border-b border-zinc-100 bg-zinc-50">
                 <h3 className="font-bold text-zinc-900">Accessibility Settings</h3>
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="p-1 rounded-md hover:bg-zinc-200 text-zinc-500 transition-colors"
+                  className="p-1 rounded-md hover:bg-zinc-200 text-zinc-500 hover:text-zinc-900 transition-colors"
                   aria-label="Close settings"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
-              
+
               <div className="p-4 space-y-6">
                 <div>
                   <div className="flex items-center gap-2 mb-3">
@@ -87,12 +85,15 @@ export default function AccessibilityToolbar() {
                 <div className="space-y-3">
                   <button
                     onClick={toggleHighContrast}
-                    className="w-full flex items-center justify-between p-3 rounded-xl border transition-colors group bg-white"
-                    style={{ borderColor: highContrast ? '#10B981' : '#E5E7EB', backgroundColor: highContrast ? '#ECFDF5' : '#FFFFFF' }}
+                    className={`w-full flex items-center justify-between p-3.5 rounded-xl border transition-all ${
+                      highContrast
+                        ? 'border-emerald-600 bg-emerald-50 text-emerald-900 font-semibold'
+                        : 'border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-700 font-medium'
+                    }`}
                   >
                     <div className="flex items-center gap-3">
-                      <Contrast className={`w-5 h-5 ${highContrast ? 'text-emerald-600' : 'text-zinc-500 group-hover:text-zinc-900'}`} />
-                      <span className={`font-medium ${highContrast ? 'text-emerald-900' : 'text-zinc-700'}`}>High Contrast</span>
+                      <Contrast className={`w-5 h-5 ${highContrast ? 'text-emerald-600' : 'text-zinc-500'}`} />
+                      <span>High Contrast</span>
                     </div>
                     <div className={`w-10 h-6 rounded-full p-1 transition-colors ${highContrast ? 'bg-emerald-500' : 'bg-zinc-200'}`}>
                       <div className={`w-4 h-4 rounded-full bg-white transition-transform ${highContrast ? 'translate-x-4' : 'translate-x-0'}`} />
@@ -101,41 +102,22 @@ export default function AccessibilityToolbar() {
 
                   <button
                     onClick={toggleReduceMotion}
-                    className="w-full flex items-center justify-between p-3 rounded-xl border transition-colors group bg-white"
-                    style={{ borderColor: reduceMotion ? '#10B981' : '#E5E7EB', backgroundColor: reduceMotion ? '#ECFDF5' : '#FFFFFF' }}
+                    className={`w-full flex items-center justify-between p-3.5 rounded-xl border transition-all ${
+                      reduceMotion
+                        ? 'border-emerald-600 bg-emerald-50 text-emerald-900 font-semibold'
+                        : 'border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-700 font-medium'
+                    }`}
                   >
                     <div className="flex items-center gap-3">
                       {reduceMotion ? (
                         <Pause className="w-5 h-5 text-emerald-600" />
                       ) : (
-                        <Play className="w-5 h-5 text-zinc-500 group-hover:text-zinc-900" />
+                        <Play className="w-5 h-5 text-zinc-500" />
                       )}
-                      <span className={`font-medium ${reduceMotion ? 'text-emerald-900' : 'text-zinc-700'}`}>Reduce Motion</span>
+                      <span>Reduce Motion</span>
                     </div>
                     <div className={`w-10 h-6 rounded-full p-1 transition-colors ${reduceMotion ? 'bg-emerald-500' : 'bg-zinc-200'}`}>
                       <div className={`w-4 h-4 rounded-full bg-white transition-transform ${reduceMotion ? 'translate-x-4' : 'translate-x-0'}`} />
-                    </div>
-                  </button>
-                  
-                  <button
-                    onClick={() => {
-                      const wasEnabled = soundEnabled;
-                      toggleSound();
-                      if (!wasEnabled) playSound('correct');
-                    }}
-                    className="w-full flex items-center justify-between p-3 rounded-xl border transition-colors group bg-white"
-                    style={{ borderColor: soundEnabled ? '#10B981' : '#E5E7EB', backgroundColor: soundEnabled ? '#ECFDF5' : '#FFFFFF' }}
-                  >
-                    <div className="flex items-center gap-3">
-                      {soundEnabled ? (
-                        <Volume2 className="w-5 h-5 text-emerald-600" />
-                      ) : (
-                        <VolumeX className="w-5 h-5 text-zinc-500 group-hover:text-zinc-900" />
-                      )}
-                      <span className={`font-medium ${soundEnabled ? 'text-emerald-900' : 'text-zinc-700'}`}>Sound Effects</span>
-                    </div>
-                    <div className={`w-10 h-6 rounded-full p-1 transition-colors ${soundEnabled ? 'bg-emerald-500' : 'bg-zinc-200'}`}>
-                      <div className={`w-4 h-4 rounded-full bg-white transition-transform ${soundEnabled ? 'translate-x-4' : 'translate-x-0'}`} />
                     </div>
                   </button>
                 </div>

@@ -51,7 +51,7 @@ function ProfileContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F7F7F8]">
+      <div className="min-h-screen flex items-center justify-center bg-[#FAF9F5]">
         <div className="w-10 h-10 border-2 border-zinc-400 border-t-zinc-900 rounded-full animate-spin" />
       </div>
     );
@@ -84,7 +84,7 @@ function ProfileContent() {
   }
 
   return (
-    <main className="min-h-screen bg-[#F7F7F8] py-20 px-6">
+    <main className="min-h-screen bg-[#FAF9F5] py-20 px-6">
       <div className="max-w-4xl mx-auto">
         <motion.div initial="hidden" animate="visible" variants={stagger}>
           {/* Header Profile Card */}

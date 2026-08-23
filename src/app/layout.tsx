@@ -24,7 +24,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${jakarta.variable} ${jetbrainsMono.variable} font-sans bg-[#F7F7F8] text-[#111113] antialiased selection:bg-zinc-200`}>
+      <body className={`${jakarta.variable} ${jetbrainsMono.variable} font-sans bg-[#FAF9F5] text-zinc-900 antialiased selection:bg-zinc-900 selection:text-white`}>
         <AuthProvider>
           <AudioProvider>
             <AccessibilityProvider>

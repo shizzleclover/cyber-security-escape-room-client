@@ -92,7 +92,7 @@ export default function CustomRoomPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#FAF9F6] flex items-center justify-center">
+      <div className="min-h-screen bg-[#FAF9F5] flex items-center justify-center">
         <div className="w-10 h-10 border-2 border-zinc-300 border-t-zinc-900 rounded-full animate-spin" />
       </div>
     );
@@ -100,7 +100,7 @@ export default function CustomRoomPage() {
 
   if (completed) {
     return (
-      <div className="min-h-screen bg-[#FAF9F6] flex flex-col items-center justify-center p-6 text-center">
+      <div className="min-h-screen bg-[#FAF9F5] flex flex-col items-center justify-center p-6 text-center">
         <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mb-6">
           <CheckCircle2 className="w-10 h-10 text-emerald-600" />
         </div>
@@ -121,7 +121,7 @@ export default function CustomRoomPage() {
   const question = questions[currentIndex];
 
   return (
-    <div className="min-h-screen bg-[#FAF9F6] pt-24 pb-12 px-4 selection:bg-zinc-900 selection:text-white">
+    <div className="min-h-screen bg-[#FAF9F5] pt-24 pb-12 px-4 selection:bg-zinc-900 selection:text-white">
       <div className="max-w-2xl mx-auto">
         <div className="flex items-center justify-between mb-8">
           <button

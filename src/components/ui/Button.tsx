@@ -35,7 +35,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           inline-flex items-center justify-center
           font-bold rounded-full
           transition-all duration-200
-          focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#F7F7F8]
+          focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#FAF9F5]
           disabled:opacity-50 disabled:cursor-not-allowed
           ${variants[variant]}
           ${sizes[size]}

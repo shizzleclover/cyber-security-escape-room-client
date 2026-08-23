@@ -99,7 +99,7 @@ const debriefData: Record<string, RoomDebrief> = {
 
 export default function DebriefPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-[#FAF9F6]"><div className="w-10 h-10 border-2 border-zinc-400 border-t-zinc-900 rounded-full animate-spin" /></div>}>
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-[#FAF9F5]"><div className="w-10 h-10 border-2 border-zinc-400 border-t-zinc-900 rounded-full animate-spin" /></div>}>
       <DebriefContent />
     </Suspense>
   );
@@ -112,7 +112,7 @@ function DebriefContent() {
   const Icon = data.icon;
 
   return (
-    <main className="relative overflow-hidden min-h-screen bg-[#FAF9F6]">
+    <main className="relative overflow-hidden min-h-screen bg-[#FAF9F5]">
       {/* Background */}
       <div className="fixed inset-0 pointer-events-none">
         <div className="absolute top-0 left-1/3 w-[600px] h-[600px] bg-zinc-200/30 rounded-full blur-[120px]" />

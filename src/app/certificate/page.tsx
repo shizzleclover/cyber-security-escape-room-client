@@ -65,7 +65,7 @@ function CertificateContent() {
 
   if (loading) {
     return (
-      <main className="min-h-screen flex items-center justify-center bg-[#F7F7F8]">
+      <main className="min-h-screen flex items-center justify-center bg-[#FAF9F5]">
         <div className="w-10 h-10 border-2 border-zinc-400 border-t-zinc-900 rounded-full animate-spin" />
       </main>
     );
@@ -73,7 +73,7 @@ function CertificateContent() {
 
   if (!eligible) {
     return (
-      <main className="min-h-screen flex items-center justify-center px-6 bg-[#F7F7F8]">
+      <main className="min-h-screen flex items-center justify-center px-6 bg-[#FAF9F5]">
         <div className="max-w-md text-center">
           <Award strokeWidth={1.5} className="w-14 h-14 text-zinc-300 mx-auto mb-5" />
           <h1 className="text-2xl font-bold text-zinc-900 mb-3">Certificate not ready yet</h1>
@@ -94,7 +94,7 @@ function CertificateContent() {
   }
 
   return (
-    <main className="min-h-screen px-6 py-12 bg-[#F7F7F8] flex flex-col items-center">
+    <main className="min-h-screen px-6 py-12 bg-[#FAF9F5] flex flex-col items-center">
       {/* Certificate */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}

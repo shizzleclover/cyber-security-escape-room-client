@@ -20,10 +20,17 @@ const api = axios.create({
   },
 });
 
-// Response interceptor for consistent error handling
+// Response interceptor for consistent error handling and global session expiration
 api.interceptors.response.use(
   (response) => response.data,
   (error) => {
+    // If unauthorized and not an initial /auth/me probe or login attempt
+    if (error.response?.status === 401 && typeof window !== 'undefined') {
+      const url = error.config?.url || '';
+      if (!url.includes('/auth/me') && !url.includes('/auth/login') && !url.includes('/auth/register')) {
+        window.dispatchEvent(new CustomEvent('cyberescape:auth_expired'));
+      }
+    }
     const message = error.response?.data?.message || 'Something went wrong. Please try again.';
     return Promise.reject(new Error(message));
   }

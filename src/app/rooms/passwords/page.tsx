@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useAudio } from '@/features/audio/AudioContext';
 import api from '@/lib/api';
 import { saveLocalScore, saveLocalProgress } from '@/lib/progressLocal';
 import {
@@ -610,7 +609,6 @@ export default function PasswordRoomPage() {
 
 function PasswordRoomContent() {
   const router = useRouter();
-  const { playSound } = useAudio();
   const [currentChallenge, setCurrentChallenge] = useState(0);
   const [scores, setScores] = useState<boolean[]>([]);
   const [roomComplete, setRoomComplete] = useState(false);
@@ -621,13 +619,11 @@ function PasswordRoomContent() {
   const totalChallenges = 4;
 
   const handleChallengeComplete = (correct: boolean) => {
-    playSound(correct ? 'correct' : 'wrong');
     setScores((prev) => [...prev, correct]);
   };
 
   const handleRevealHint = () => {
     if (hintVisible) return;
-    playSound('hint');
     setHintVisible(true);
     setHintsUsed((prev) => prev + 1);
   };
@@ -644,7 +640,6 @@ function PasswordRoomContent() {
   const handleRoomComplete = async () => {
     const timeSpent = Math.round((Date.now() - startTime) / 1000);
     const score = scores.filter(Boolean).length;
-    playSound('complete');
     setRoomComplete(true);
     
     // Fallback saves
@@ -725,7 +720,7 @@ function PasswordRoomContent() {
   const challengeCompleted = scores.length > currentChallenge;
 
   return (
-    <main className="relative min-h-screen bg-[#F7F7F8] flex items-center justify-center">
+    <main className="relative min-h-screen bg-[#FAF9F5] flex items-center justify-center">
       <div className="relative w-full max-w-3xl px-6 py-16">
         {/* Header */}
         <motion.div layout className="mb-8">

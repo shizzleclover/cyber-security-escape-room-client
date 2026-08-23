@@ -1,20 +1,20 @@
 @import "tailwindcss";
 
 @theme {
-  --color-cyber-bg: #F7F7F8;
+  --color-cyber-bg: #FAF9F5;
   --color-cyber-card: #FFFFFF;
 
-  --color-primary: #111113;
-  --color-primary-light: #48484E;
-  --color-primary-dark: #000000;
+  --color-primary: #18181B;
+  --color-primary-light: #3F3F46;
+  --color-primary-dark: #09090B;
 
   --color-cyber-emerald: #10B981;
   --color-cyber-rose: #F43F5E;
   --color-cyber-amber: #F59E0B;
 
   --color-cyber-border: rgba(0, 0, 0, 0.08);
-  --color-cyber-text-primary: #111113;
-  --color-cyber-text-secondary: #6B6B70;
+  --color-cyber-text-primary: #18181B;
+  --color-cyber-text-secondary: #71717A;
 }
 
 /* ============================================
@@ -45,8 +45,8 @@ html.lenis, html.lenis body {
 
 body {
   font-family: var(--font-sans);
-  background: #F7F7F8;
-  color: #111113;
+  background: #FAF9F5;
+  color: #18181B;
   line-height: 1.6;
   overflow-x: hidden;
 }
@@ -66,37 +66,52 @@ html.high-contrast body,
 html.high-contrast main,
 html.high-contrast header,
 html.high-contrast footer,
-html.high-contrast section {
+html.high-contrast section,
+html.high-contrast nav,
+html.high-contrast article,
+html.high-contrast aside {
   background-color: #000000 !important;
+  background-image: none !important;
   color: #FFFFFF !important;
 }
 
-/* Card & Surface Containers */
-html.high-contrast .bg-white,
-html.high-contrast .bg-zinc-50,
-html.high-contrast .bg-zinc-100,
-html.high-contrast .bg-zinc-200,
-html.high-contrast .bg-zinc-800,
-html.high-contrast .bg-zinc-900,
-html.high-contrast .bg-slate-900,
-html.high-contrast .bg-slate-950,
+/* Card, Surface & Background Containers */
+html.high-contrast [class*="bg-white"],
+html.high-contrast [class*="bg-zinc-"],
+html.high-contrast [class*="bg-slate-"],
+html.high-contrast [class*="bg-neutral-"],
+html.high-contrast [class*="bg-gray-"],
+html.high-contrast [class*="bg-[#"],
 html.high-contrast [class*="bg-emerald-"],
 html.high-contrast [class*="bg-blue-"],
 html.high-contrast [class*="bg-rose-"],
-html.high-contrast [class*="bg-amber-"] {
+html.high-contrast [class*="bg-red-"],
+html.high-contrast [class*="bg-amber-"],
+html.high-contrast [class*="bg-indigo-"] {
   background-color: #000000 !important;
   background-image: none !important;
 }
 
-/* Crisp 2px High Contrast Borders */
+/* Modal Backdrops & Overlays */
+html.high-contrast .fixed.inset-0,
+html.high-contrast [class*="backdrop-blur"] {
+  background-color: rgba(0, 0, 0, 0.85) !important;
+}
+
+/* Crisp High-Contrast Borders */
 html.high-contrast div,
 html.high-contrast section,
 html.high-contrast article,
-html.high-contrast aside {
+html.high-contrast aside,
+html.high-contrast nav,
+html.high-contrast table,
+html.high-contrast tr,
+html.high-contrast th,
+html.high-contrast td {
   border-color: #FFFFFF !important;
 }
 
-/* All Text Elements Guaranteed White */
+/* All Text Elements Guaranteed High Contrast */
 html.high-contrast h1,
 html.high-contrast h2,
 html.high-contrast h3,
@@ -109,7 +124,10 @@ html.high-contrast li,
 html.high-contrast label,
 html.high-contrast strong,
 html.high-contrast b,
-html.high-contrast em {
+html.high-contrast em,
+html.high-contrast dt,
+html.high-contrast dd,
+html.high-contrast small {
   color: #FFFFFF !important;
   -webkit-text-fill-color: #FFFFFF !important;
 }
@@ -130,15 +148,18 @@ html.high-contrast textarea::placeholder {
   -webkit-text-fill-color: #A1A1AA !important;
 }
 
-/* Links */
+/* Interactive Links */
 html.high-contrast a {
   color: #60A5FA !important;
   text-decoration: underline !important;
   text-underline-offset: 3px !important;
 }
 
-html.high-contrast a:hover {
+html.high-contrast a:hover,
+html.high-contrast a:focus {
   color: #FFFFFF !important;
+  outline: 2px solid #60A5FA !important;
+  outline-offset: 2px !important;
 }
 
 /* Buttons */
@@ -158,9 +179,23 @@ html.high-contrast button:focus {
   outline-offset: 2px !important;
 }
 
-html.high-contrast button:hover * {
+html.high-contrast button:hover *,
+html.high-contrast button:focus * {
   color: #000000 !important;
   -webkit-text-fill-color: #000000 !important;
+}
+
+html.high-contrast button:disabled {
+  opacity: 0.5 !important;
+  border-color: #71717A !important;
+  color: #71717A !important;
+  -webkit-text-fill-color: #71717A !important;
+}
+
+/* Badges & Status Indicators */
+html.high-contrast [class*="rounded-full"],
+html.high-contrast [class*="badge"] {
+  border: 1px solid #FFFFFF !important;
 }
 
 /* SVGs / Icons */
