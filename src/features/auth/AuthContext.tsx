@@ -31,6 +31,7 @@ interface RegisterData {
   digitalConfidence: number;
 }
 
+const TOKEN_KEY = 'cyberescape:token';
 const AUTH_EVENT_KEY = 'cyberescape:auth_event';
 const PROTECTED_ROUTES = ['/hub', '/dashboard', '/profile', '/admin', '/rooms', '/certificate'];
 
@@ -43,6 +44,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname();
 
   const handleSessionExpired = useCallback(() => {
+    try {
+      localStorage.removeItem(TOKEN_KEY);
+    } catch {}
     setUser(null);
     if (PROTECTED_ROUTES.some((route) => pathname.startsWith(route))) {
       router.replace('/login');
@@ -56,12 +60,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const checkAuth = async () => {
       try {
         const response: any = await api.get('/auth/me');
-        if (isMounted) {
+        if (isMounted && response?.data?.user) {
           setUser(response.data.user);
           syncLocalData();
         }
       } catch {
         if (isMounted) {
+          try {
+            localStorage.removeItem(TOKEN_KEY);
+          } catch {}
           setUser(null);
         }
       } finally {
@@ -70,6 +77,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       }
     };
+
     checkAuth();
 
     // 1. Cross-tab synchronization via BroadcastChannel
@@ -106,7 +114,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     // 3. API 401 session expiration event
     const handleAuthExpiredEvent = () => {
-      setUser(null);
       handleSessionExpired();
     };
     window.addEventListener('cyberescape:auth_expired', handleAuthExpiredEvent);
@@ -137,7 +144,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (email: string, password: string) => {
     const response: any = await api.post('/auth/login', { email, password });
-    const authenticatedUser = response.data.user as User;
+    const { user: authenticatedUser, token } = response.data;
+    
+    if (token) {
+      try {
+        localStorage.setItem(TOKEN_KEY, token);
+      } catch {}
+    }
+
     setUser(authenticatedUser);
     broadcastAuthEvent('LOGIN');
     syncLocalData();
@@ -146,7 +160,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const register = async (data: RegisterData) => {
     const response: any = await api.post('/auth/register', data);
-    const registeredUser = response.data.user as User;
+    const { user: registeredUser, token } = response.data;
+
+    if (token) {
+      try {
+        localStorage.setItem(TOKEN_KEY, token);
+      } catch {}
+    }
+
     setUser(registeredUser);
     broadcastAuthEvent('LOGIN');
     syncLocalData();
@@ -158,15 +179,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await api.post('/auth/logout');
     } catch {}
 
-    setUser(null);
-    broadcastAuthEvent('LOGOUT');
-
-    // Clean up cached keys if necessary
     try {
+      localStorage.removeItem(TOKEN_KEY);
       document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
     } catch {}
 
-    // Navigate to home or login page immediately
+    setUser(null);
+    broadcastAuthEvent('LOGOUT');
     router.replace('/');
   };
 
