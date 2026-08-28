@@ -75,7 +75,7 @@ html.high-contrast aside {
   color: #FFFFFF !important;
 }
 
-/* Card, Surface & Background Containers */
+/* Card, Surface & Background Containers — Pure Black / No White Boxes */
 html.high-contrast [class*="bg-white"],
 html.high-contrast [class*="bg-zinc-"],
 html.high-contrast [class*="bg-slate-"],
@@ -87,6 +87,7 @@ html.high-contrast [class*="bg-blue-"],
 html.high-contrast [class*="bg-rose-"],
 html.high-contrast [class*="bg-red-"],
 html.high-contrast [class*="bg-amber-"],
+html.high-contrast [class*="bg-violet-"],
 html.high-contrast [class*="bg-indigo-"] {
   background-color: #000000 !important;
   background-image: none !important;
@@ -95,7 +96,7 @@ html.high-contrast [class*="bg-indigo-"] {
 /* Modal Backdrops & Overlays */
 html.high-contrast .fixed.inset-0,
 html.high-contrast [class*="backdrop-blur"] {
-  background-color: rgba(0, 0, 0, 0.85) !important;
+  background-color: rgba(0, 0, 0, 0.9) !important;
 }
 
 /* Crisp High-Contrast Borders */
@@ -111,7 +112,7 @@ html.high-contrast td {
   border-color: #FFFFFF !important;
 }
 
-/* All Text Elements Guaranteed High Contrast */
+/* All Text Elements Guaranteed High Contrast White */
 html.high-contrast h1,
 html.high-contrast h2,
 html.high-contrast h3,
@@ -148,17 +149,21 @@ html.high-contrast textarea::placeholder {
   -webkit-text-fill-color: #A1A1AA !important;
 }
 
-/* Interactive Links */
+/* Links — High-Contrast White with Underline (Zero Blue) */
 html.high-contrast a {
-  color: #60A5FA !important;
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
   text-decoration: underline !important;
+  text-decoration-thickness: 1.5px !important;
   text-underline-offset: 3px !important;
 }
 
 html.high-contrast a:hover,
 html.high-contrast a:focus {
-  color: #FFFFFF !important;
-  outline: 2px solid #60A5FA !important;
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+  background-color: #FFFFFF !important;
+  outline: 2px solid #FFFFFF !important;
   outline-offset: 2px !important;
 }
 
@@ -175,7 +180,7 @@ html.high-contrast button:focus {
   background-color: #FFFFFF !important;
   color: #000000 !important;
   -webkit-text-fill-color: #000000 !important;
-  outline: 3px solid #60A5FA !important;
+  outline: 2px solid #FFFFFF !important;
   outline-offset: 2px !important;
 }
 
@@ -198,9 +203,44 @@ html.high-contrast [class*="badge"] {
   border: 1px solid #FFFFFF !important;
 }
 
-/* SVGs / Icons */
+/* Icons & SVGs — Bright White on Dark Canvas / No White Box Backgrounds */
 html.high-contrast svg {
-  color: inherit !important;
+  color: #FFFFFF !important;
+  stroke: #FFFFFF !important;
+}
+
+html.high-contrast svg path,
+html.high-contrast svg circle,
+html.high-contrast svg rect,
+html.high-contrast svg line,
+html.high-contrast svg polyline,
+html.high-contrast svg polygon {
+  stroke: #FFFFFF !important;
+}
+
+html.high-contrast svg[fill]:not([fill="none"]),
+html.high-contrast svg *[fill]:not([fill="none"]) {
+  fill: #FFFFFF !important;
+}
+
+/* Inverted icons on button/link hover */
+html.high-contrast button:hover svg,
+html.high-contrast button:hover svg *,
+html.high-contrast button:focus svg,
+html.high-contrast button:focus svg *,
+html.high-contrast a:hover svg,
+html.high-contrast a:hover svg *,
+html.high-contrast a:focus svg,
+html.high-contrast a:focus svg * {
+  color: #000000 !important;
+  stroke: #000000 !important;
+}
+
+html.high-contrast button:hover svg[fill]:not([fill="none"]),
+html.high-contrast button:hover svg *[fill]:not([fill="none"]),
+html.high-contrast a:hover svg[fill]:not([fill="none"]),
+html.high-contrast a:hover svg *[fill]:not([fill="none"]) {
+  fill: #000000 !important;
 }
 
 /* Reduced Motion Mode (CSS fallbacks for non-framer animations) */

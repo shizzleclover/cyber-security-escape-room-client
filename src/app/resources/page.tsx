@@ -94,12 +94,6 @@ export default function ResourcesPage() {
 
   return (
     <main className="relative overflow-hidden min-h-screen bg-[#FAF9F5]">
-      {/* Background */}
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-0 right-1/3 w-[600px] h-[600px] bg-zinc-200/30 rounded-full blur-[120px]" />
-        <div className="absolute bottom-1/4 left-1/4 w-[400px] h-[400px] bg-zinc-100/40 rounded-full blur-[100px]" />
-      </div>
-
       <section className="relative px-6 pt-28 pb-20">
         <div className="max-w-5xl mx-auto">
           {/* Header */}

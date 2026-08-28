@@ -113,11 +113,6 @@ function DebriefContent() {
 
   return (
     <main className="relative overflow-hidden min-h-screen bg-[#FAF9F5]">
-      {/* Background */}
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-0 left-1/3 w-[600px] h-[600px] bg-zinc-200/30 rounded-full blur-[120px]" />
-      </div>
-
       <section className="relative px-6 pt-28 pb-20">
         <div className="max-w-3xl mx-auto">
           <motion.div
