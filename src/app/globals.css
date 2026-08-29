@@ -149,25 +149,40 @@ html.high-contrast textarea::placeholder {
   -webkit-text-fill-color: #A1A1AA !important;
 }
 
-/* Links — High-Contrast White with Underline (Zero Blue) */
+/* Links — High-Contrast White with Clean Underline (Zero Blue, No White Blobs) */
 html.high-contrast a {
   color: #FFFFFF !important;
   -webkit-text-fill-color: #FFFFFF !important;
   text-decoration: underline !important;
   text-decoration-thickness: 1.5px !important;
   text-underline-offset: 3px !important;
+  background-color: transparent !important;
 }
 
 html.high-contrast a:hover,
 html.high-contrast a:focus {
-  color: #000000 !important;
-  -webkit-text-fill-color: #000000 !important;
-  background-color: #FFFFFF !important;
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+  background-color: #000000 !important;
+  border-color: #FFFFFF !important;
   outline: 2px solid #FFFFFF !important;
   outline-offset: 2px !important;
 }
 
-/* Buttons */
+html.high-contrast a:hover *,
+html.high-contrast a:focus *,
+html.high-contrast a:hover span,
+html.high-contrast a:hover h1,
+html.high-contrast a:hover h2,
+html.high-contrast a:hover h3,
+html.high-contrast a:hover h4,
+html.high-contrast a:hover p,
+html.high-contrast a:hover div {
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+}
+
+/* Buttons — High Contrast Black Canvas with Solid White Border */
 html.high-contrast button {
   border: 2px solid #FFFFFF !important;
   background-color: #000000 !important;
@@ -177,17 +192,19 @@ html.high-contrast button {
 
 html.high-contrast button:hover,
 html.high-contrast button:focus {
-  background-color: #FFFFFF !important;
-  color: #000000 !important;
-  -webkit-text-fill-color: #000000 !important;
+  background-color: #000000 !important;
+  border-color: #FFFFFF !important;
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
   outline: 2px solid #FFFFFF !important;
   outline-offset: 2px !important;
 }
 
 html.high-contrast button:hover *,
 html.high-contrast button:focus * {
-  color: #000000 !important;
-  -webkit-text-fill-color: #000000 !important;
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+  stroke: #FFFFFF !important;
 }
 
 html.high-contrast button:disabled {
@@ -201,9 +218,11 @@ html.high-contrast button:disabled {
 html.high-contrast [class*="rounded-full"],
 html.high-contrast [class*="badge"] {
   border: 1px solid #FFFFFF !important;
+  background-color: #000000 !important;
+  color: #FFFFFF !important;
 }
 
-/* Icons & SVGs — Bright White on Dark Canvas / No White Box Backgrounds */
+/* Icons & SVGs — Bright White on Dark Canvas Across All States */
 html.high-contrast svg {
   color: #FFFFFF !important;
   stroke: #FFFFFF !important;
@@ -223,7 +242,6 @@ html.high-contrast svg *[fill]:not([fill="none"]) {
   fill: #FFFFFF !important;
 }
 
-/* Inverted icons on button/link hover */
 html.high-contrast button:hover svg,
 html.high-contrast button:hover svg *,
 html.high-contrast button:focus svg,
@@ -232,15 +250,8 @@ html.high-contrast a:hover svg,
 html.high-contrast a:hover svg *,
 html.high-contrast a:focus svg,
 html.high-contrast a:focus svg * {
-  color: #000000 !important;
-  stroke: #000000 !important;
-}
-
-html.high-contrast button:hover svg[fill]:not([fill="none"]),
-html.high-contrast button:hover svg *[fill]:not([fill="none"]),
-html.high-contrast a:hover svg[fill]:not([fill="none"]),
-html.high-contrast a:hover svg *[fill]:not([fill="none"]) {
-  fill: #000000 !important;
+  color: #FFFFFF !important;
+  stroke: #FFFFFF !important;
 }
 
 /* Reduced Motion Mode (CSS fallbacks for non-framer animations) */

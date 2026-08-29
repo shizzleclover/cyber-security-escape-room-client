@@ -347,6 +347,11 @@ export default function LandingPage() {
       <section className="relative pt-16 pb-24 px-6 md:px-12">
         <div className="max-w-5xl mx-auto text-center">
           
+          {/* Green Brand Icon */}
+          <div className="w-14 h-14 rounded-2xl bg-emerald-50 border border-emerald-200/80 flex items-center justify-center text-emerald-600 mx-auto mb-6 shadow-sm">
+            <Shield strokeWidth={2.25} className="w-7 h-7" />
+          </div>
+
           {/* Badge */}
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-zinc-200/80 shadow-sm text-xs font-semibold text-zinc-700 mb-8">
             <span className="w-2 h-2 rounded-full bg-emerald-500" />
@@ -591,6 +596,11 @@ export default function LandingPage() {
       {/* ─── 05 · Final Call to Action ────────────────────────────────── */}
       <section className="py-24 px-6 md:px-12 bg-zinc-900 text-white">
         <div className="max-w-4xl mx-auto text-center space-y-6">
+          
+          <div className="w-14 h-14 rounded-2xl bg-emerald-950/80 border border-emerald-800/80 flex items-center justify-center text-emerald-400 mx-auto mb-2 shadow-sm">
+            <Shield strokeWidth={2.25} className="w-7 h-7" />
+          </div>
+
           <span className="text-xs font-semibold uppercase tracking-wider text-emerald-400 bg-emerald-950/60 border border-emerald-800/80 px-3 py-1 rounded-full">
             Ready to Begin
           </span>
