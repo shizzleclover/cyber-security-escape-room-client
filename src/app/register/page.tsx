@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import BackgroundFader from "@/components/ui/BackgroundFader";
 import { useAuth } from '@/features/auth/AuthContext';
 import { Shield, Mail, User, ArrowRight, Calendar, Gauge } from 'lucide-react';
 
@@ -61,7 +62,7 @@ export default function RegisterPage() {
         >
           {/* Logo */}
           <Link href="/" className="inline-flex items-center gap-2 mb-12 group">
-            <Shield strokeWidth={2} className="w-6 h-6 text-zinc-900 group-hover:scale-110 transition-transform" />
+            <img src="/images/mascot-owl.jpg" alt="CyberEscape Mascot" className="w-8 h-8 object-cover rounded-full group-hover:scale-110 transition-transform" />
             <span className="text-lg font-bold tracking-tight text-zinc-900">
               CyberEscape
             </span>
@@ -199,26 +200,24 @@ export default function RegisterPage() {
       </div>
 
       {/* Right Interactive Section (Desktop Only) */}
-      <div className="hidden lg:flex w-1/2 bg-zinc-900 p-12 items-center justify-center relative overflow-hidden">
+      <div className="hidden lg:flex w-1/2 bg-zinc-950 items-center justify-center relative overflow-hidden">
+        {/* Rotating Background Image */}
+        <BackgroundFader  />
+        
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 50, repeat: Infinity, ease: 'linear' }}
-          className="absolute -top-1/2 -right-1/2 w-[800px] h-[800px] border-[40px] border-zinc-800/50 rounded-full opacity-20"
-        />
-        <motion.div
-          animate={{ rotate: -360 }}
-          transition={{ duration: 70, repeat: Infinity, ease: 'linear' }}
-          className="absolute -bottom-1/2 -left-1/2 w-[600px] h-[600px] border-[30px] border-zinc-800/30 rounded-full opacity-20"
+          className="absolute -top-1/2 -right-1/2 w-[800px] h-[800px] border-[40px] border-zinc-800/30 rounded-full opacity-20"
         />
         
-        <div className="relative z-10 max-w-lg">
-          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.2 }} className="w-16 h-16 bg-zinc-800 rounded-2xl flex items-center justify-center mb-8 border border-zinc-700/50 shadow-2xl">
-            <Shield strokeWidth={1.5} className="w-8 h-8 text-emerald-400" />
+        <div className="relative z-10 max-w-lg p-12">
+          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.2 }} className="w-16 h-16 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center mb-8 border border-white/20 shadow-2xl">
+            <img src="/images/mascot-owl.jpg" alt="Mascot" className="w-10 h-10 object-cover rounded-full shadow-md" />
           </motion.div>
-          <motion.h2 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="text-4xl font-bold text-white mb-6 leading-tight">
+          <motion.h2 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="text-4xl font-bold text-white mb-6 leading-tight drop-shadow-sm">
             Your security<br />starts here.
           </motion.h2>
-          <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="text-lg text-zinc-400 leading-relaxed font-medium">
+          <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="text-lg text-zinc-300 leading-relaxed font-medium drop-shadow-sm">
             Join thousands of users who are building their digital confidence through our immersive, hands-on escape rooms.
           </motion.p>
         </div>

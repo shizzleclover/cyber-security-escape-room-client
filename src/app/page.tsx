@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
+import BackgroundFader from "@/components/ui/BackgroundFader";
 import { useAuth } from '@/features/auth/AuthContext';
 import {
   Mail, Lock, Users, ArrowRight, CheckCircle2,
@@ -259,6 +260,7 @@ function InteractiveRoomPreview() {
 
 /* ─── Main Landing Page ─────────────────────────────────────────────────── */
 
+
 export default function LandingPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
@@ -345,26 +347,28 @@ export default function LandingPage() {
       
       {/* ─── 01 · Hero Section ────────────────────────────────────────── */}
       <section className="relative pt-16 pb-24 px-6 md:px-12">
-        <div className="max-w-5xl mx-auto text-center">
+        <BackgroundFader overlayClassName="bg-gradient-to-b from-zinc-950/20 via-zinc-950/40 to-[#FAF9F5]" />
+        
+        <div className="max-w-5xl mx-auto text-center relative z-10">
           
-          {/* Green Brand Icon */}
-          <div className="w-14 h-14 rounded-2xl bg-emerald-50 border border-emerald-200/80 flex items-center justify-center text-emerald-600 mx-auto mb-6 shadow-sm">
-            <Shield strokeWidth={2.25} className="w-7 h-7" />
+          {/* Green Brand Mascot */}
+          <div className="w-56 h-56 rounded-[3rem] bg-white/5 backdrop-blur-sm border border-white/10 flex items-center justify-center mx-auto mb-10 shadow-2xl">
+            <img src="/images/mascot-owl.jpg" alt="CyberEscape Mascot" className="w-52 h-52 object-cover rounded-full shadow-lg" />
           </div>
 
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-zinc-200/80 shadow-sm text-xs font-semibold text-zinc-700 mb-8">
-            <span className="w-2 h-2 rounded-full bg-emerald-500" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black/40 backdrop-blur-md border border-zinc-700/80 shadow-sm text-xs font-semibold text-zinc-300 mb-8">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
             <span>Interactive Cyber Escape Rooms • Ireland</span>
           </div>
 
           {/* Main Headline */}
-          <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-zinc-900 leading-[1.05] max-w-4xl mx-auto mb-6">
+          <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-white leading-[1.05] max-w-4xl mx-auto mb-6 drop-shadow-sm">
             Outsmart scammers before they reach your inbox.
           </h1>
 
           {/* Subheading */}
-          <p className="text-lg sm:text-xl text-zinc-600 leading-relaxed max-w-2xl mx-auto mb-10">
+          <p className="text-lg sm:text-xl text-zinc-300 leading-relaxed max-w-2xl mx-auto mb-10 drop-shadow">
             Interactive, game-like escape rooms designed to build your cybersecurity instincts in 30 minutes. 100% free and zero technical experience required.
           </p>
 
@@ -372,7 +376,7 @@ export default function LandingPage() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               href={startHref}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-4 text-[15px] font-semibold text-white bg-zinc-900 hover:bg-zinc-800 rounded-full shadow-md hover:shadow-lg transition-all"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-4 text-[15px] font-semibold text-zinc-900 bg-white hover:bg-zinc-100 rounded-full shadow-lg hover:shadow-xl transition-all"
             >
               <span>Start Free Assessment</span>
               <ArrowRight className="w-4 h-4" />
@@ -380,7 +384,7 @@ export default function LandingPage() {
 
             <a
               href="#rooms"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-4 text-[15px] font-medium text-zinc-700 bg-white hover:bg-zinc-50 border border-zinc-200/80 rounded-full transition-all"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-4 text-[15px] font-medium text-white bg-black/40 hover:bg-black/60 border border-zinc-700 rounded-full transition-all backdrop-blur-md"
             >
               <span>Explore Escape Rooms</span>
               <ArrowRight className="w-4 h-4 text-zinc-400" />
@@ -594,11 +598,12 @@ export default function LandingPage() {
       </section>
 
       {/* ─── 05 · Final Call to Action ────────────────────────────────── */}
-      <section className="py-24 px-6 md:px-12 bg-zinc-900 text-white">
-        <div className="max-w-4xl mx-auto text-center space-y-6">
+      <section className="py-24 px-6 md:px-12 bg-zinc-900 text-white relative overflow-hidden">
+        <div className="absolute inset-0 bg-zinc-950/50 z-0" />
+        <div className="max-w-4xl mx-auto text-center space-y-6 relative z-10">
           
-          <div className="w-14 h-14 rounded-2xl bg-emerald-950/80 border border-emerald-800/80 flex items-center justify-center text-emerald-400 mx-auto mb-2 shadow-sm">
-            <Shield strokeWidth={2.25} className="w-7 h-7" />
+          <div className="w-40 h-40 rounded-[2rem] bg-white/5 backdrop-blur-sm border border-emerald-500/20 flex items-center justify-center mx-auto mb-6 shadow-xl">
+            <img src="/images/mascot-owl.jpg" alt="CyberEscape Mascot" className="w-36 h-36 object-cover rounded-full shadow-lg" />
           </div>
 
           <span className="text-xs font-semibold uppercase tracking-wider text-emerald-400 bg-emerald-950/60 border border-emerald-800/80 px-3 py-1 rounded-full">

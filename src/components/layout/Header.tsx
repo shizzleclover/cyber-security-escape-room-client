@@ -34,8 +34,8 @@ export default function Header() {
       <div className="mx-auto max-w-6xl px-6 h-16 flex items-center justify-between">
         {/* Logo */}
         <Link href={user ? '/hub' : '/'} className="flex items-center gap-2.5 group">
-          <div className="w-8 h-8 rounded-lg bg-zinc-900 flex items-center justify-center text-white shadow-sm group-hover:scale-105 transition-transform">
-            <Shield strokeWidth={2.25} className="w-4 h-4 text-emerald-400" />
+          <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform border border-zinc-200">
+            <img src="/images/mascot-owl.jpg" alt="Mascot" className="w-6 h-6 object-cover rounded-full shadow-sm" />
           </div>
           <div className="flex items-baseline gap-1">
             <span className="text-[15px] font-bold tracking-tight text-zinc-900">
