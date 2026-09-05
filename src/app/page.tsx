@@ -347,7 +347,7 @@ export default function LandingPage() {
       
       {/* ─── 01 · Hero Section ────────────────────────────────────────── */}
       <section className="relative pt-16 pb-24 px-6 md:px-12">
-        <BackgroundFader overlayClassName="bg-gradient-to-b from-zinc-950/20 via-zinc-950/40 to-[#FAF9F5]" />
+        <BackgroundFader />
         
         <div className="max-w-5xl mx-auto text-center relative z-10">
           
