@@ -1,5 +1,14 @@
 'use client';
 
+/**
+ * @fileoverview Select.tsx
+ * @module ui/Select.tsx
+ * 
+ * React Component/Page for the CyberEscape platform.
+ * This file handles logic specific to its directory domain.
+ */
+
+
 import { SelectHTMLAttributes, forwardRef } from 'react';
 
 interface SelectOption {

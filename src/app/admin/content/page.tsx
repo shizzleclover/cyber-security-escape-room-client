@@ -1,5 +1,14 @@
 'use client';
 
+/**
+ * @fileoverview page.tsx
+ * @module content/page.tsx
+ * 
+ * React Component/Page for the CyberEscape platform.
+ * This file handles logic specific to its directory domain.
+ */
+
+
 import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import api from '@/lib/api';

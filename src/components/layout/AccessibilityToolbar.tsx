@@ -1,5 +1,14 @@
 'use client';
 
+/**
+ * @fileoverview AccessibilityToolbar.tsx
+ * @module layout/AccessibilityToolbar.tsx
+ * 
+ * React Component/Page for the CyberEscape platform.
+ * This file handles logic specific to its directory domain.
+ */
+
+
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Settings, Type, ZoomIn, ZoomOut, Contrast, Play, Pause, X } from 'lucide-react';

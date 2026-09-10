@@ -1,5 +1,14 @@
 'use client';
 
+/**
+ * @fileoverview Input.tsx
+ * @module ui/Input.tsx
+ * 
+ * React Component/Page for the CyberEscape platform.
+ * This file handles logic specific to its directory domain.
+ */
+
+
 import { InputHTMLAttributes, forwardRef } from 'react';
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {

@@ -1,5 +1,14 @@
 'use client';
 
+/**
+ * @fileoverview page.tsx
+ * @module certificate/page.tsx
+ * 
+ * React Component/Page for the CyberEscape platform.
+ * This file handles logic specific to its directory domain.
+ */
+
+
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';

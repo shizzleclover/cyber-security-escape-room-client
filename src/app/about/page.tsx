@@ -1,5 +1,14 @@
 'use client';
 
+/**
+ * @fileoverview page.tsx
+ * @module about/page.tsx
+ * 
+ * React Component/Page for the CyberEscape platform.
+ * This file handles logic specific to its directory domain.
+ */
+
+
 import { motion } from 'framer-motion';
 import { 
   Shield, Target, Users, BookOpen, Accessibility, 

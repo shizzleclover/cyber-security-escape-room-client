@@ -1,3 +1,11 @@
+/**
+ * @fileoverview api.ts
+ * @module lib/api.ts
+ * 
+ * Utility/Service module for the CyberEscape platform.
+ * This file handles logic specific to its directory domain.
+ */
+
 import axios from 'axios';
 
 // Primary source is the NEXT_PUBLIC_API_URL env var (set per-environment).

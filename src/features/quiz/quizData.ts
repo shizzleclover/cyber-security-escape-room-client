@@ -1,4 +1,12 @@
 /**
+ * @fileoverview quizData.ts
+ * @module quiz/quizData.ts
+ * 
+ * Utility/Service module for the CyberEscape platform.
+ * This file handles logic specific to its directory domain.
+ */
+
+/**
  * Quiz questions for the pre/post assessment.
  * Correct answers are included here for client-side checking,
  * but also validated server-side on submission.

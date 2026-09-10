@@ -1,5 +1,14 @@
 'use client';
 
+/**
+ * @fileoverview page.tsx
+ * @module social-engineering/page.tsx
+ * 
+ * React Component/Page for the CyberEscape platform.
+ * This file handles logic specific to its directory domain.
+ */
+
+
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -49,6 +58,13 @@ interface FeedbackData {
   redFlags: string[];
 }
 
+/**
+ * SocialEngineeringRoomPage
+ * 
+ * Renders the Social Engineering escape room. This module simulates
+ * SMS (smishing) and phone (vishing) attacks to evaluate the user's
+ * ability to detect pretexting, urgency, and authority-based manipulation.
+ */
 export default function SocialEngineeringRoomPage() {
   return <SocialEngineeringContent />;
 }

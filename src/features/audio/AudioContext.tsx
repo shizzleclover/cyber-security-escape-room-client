@@ -1,5 +1,14 @@
 'use client';
 
+/**
+ * @fileoverview AudioContext.tsx
+ * @module audio/AudioContext.tsx
+ * 
+ * React Component/Page for the CyberEscape platform.
+ * This file handles logic specific to its directory domain.
+ */
+
+
 import React, { createContext, useContext } from 'react';
 
 export type SoundEvent = 'correct' | 'wrong' | 'hint' | 'complete' | 'click';

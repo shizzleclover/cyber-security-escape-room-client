@@ -1,4 +1,12 @@
 /**
+ * @fileoverview quizLocal.ts
+ * @module lib/quizLocal.ts
+ * 
+ * Utility/Service module for the CyberEscape platform.
+ * This file handles logic specific to its directory domain.
+ */
+
+/**
  * Lightweight local persistence for quiz attempts.
  *
  * The deployed backend can be slow to wake up, so a quiz result is written to

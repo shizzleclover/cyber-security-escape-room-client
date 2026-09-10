@@ -1,5 +1,14 @@
 'use client';
 
+/**
+ * @fileoverview PageTransition.tsx
+ * @module layout/PageTransition.tsx
+ * 
+ * React Component/Page for the CyberEscape platform.
+ * This file handles logic specific to its directory domain.
+ */
+
+
 import { motion } from 'framer-motion';
 import { ReactNode } from 'react';
 

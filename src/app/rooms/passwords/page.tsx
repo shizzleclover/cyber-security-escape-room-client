@@ -1,5 +1,14 @@
 'use client';
 
+/**
+ * @fileoverview page.tsx
+ * @module passwords/page.tsx
+ * 
+ * React Component/Page for the CyberEscape platform.
+ * This file handles logic specific to its directory domain.
+ */
+
+
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -603,6 +612,17 @@ function PasswordManagerChallenge({ onComplete }: { onComplete: (correct: boolea
 
 // ─── Main Password Room ──────────────────────────────────────────────────────
 
+/**
+ * PasswordRoomPage
+ * 
+ * Renders the Password Security escape room. This room tests the user on
+ * password entropy, dictionary attacks, and complexity rules through
+ * an interactive "password strength" meter and timed challenges.
+ * 
+ * State Management:
+ * - Tracks user input to calculate entropy score dynamically.
+ * - Calculates estimated time-to-crack using the `zxcvbn` library.
+ */
 export default function PasswordRoomPage() {
   return <PasswordRoomContent />;
 }

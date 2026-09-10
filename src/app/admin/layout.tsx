@@ -1,5 +1,14 @@
 'use client';
 
+/**
+ * @fileoverview layout.tsx
+ * @module admin/layout.tsx
+ * 
+ * React Component/Page for the CyberEscape platform.
+ * This file handles logic specific to its directory domain.
+ */
+
+
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';

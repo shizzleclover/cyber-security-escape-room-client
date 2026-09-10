@@ -1,5 +1,14 @@
 'use client';
 
+/**
+ * @fileoverview AccessibilityContext.tsx
+ * @module accessibility/AccessibilityContext.tsx
+ * 
+ * React Component/Page for the CyberEscape platform.
+ * This file handles logic specific to its directory domain.
+ */
+
+
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { MotionConfig } from 'framer-motion';
 

@@ -1,5 +1,14 @@
 'use client';
 
+/**
+ * @fileoverview Header.tsx
+ * @module layout/Header.tsx
+ * 
+ * React Component/Page for the CyberEscape platform.
+ * This file handles logic specific to its directory domain.
+ */
+
+
 import Link from 'next/link';
 import { useAuth } from '@/features/auth/AuthContext';
 import { useState } from 'react';

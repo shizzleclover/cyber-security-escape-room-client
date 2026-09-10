@@ -1,5 +1,14 @@
 'use client';
 
+/**
+ * @fileoverview SmoothScroll.tsx
+ * @module layout/SmoothScroll.tsx
+ * 
+ * React Component/Page for the CyberEscape platform.
+ * This file handles logic specific to its directory domain.
+ */
+
+
 import { ReactNode, useEffect } from 'react';
 import Lenis from 'lenis';
 

@@ -1,5 +1,14 @@
 'use client';
 
+/**
+ * @fileoverview ProtectedRoute.tsx
+ * @module auth/ProtectedRoute.tsx
+ * 
+ * React Component/Page for the CyberEscape platform.
+ * This file handles logic specific to its directory domain.
+ */
+
+
 import { useAuth } from './AuthContext';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';

@@ -1,4 +1,12 @@
 /**
+ * @fileoverview progressLocal.ts
+ * @module lib/progressLocal.ts
+ * 
+ * Utility/Service module for the CyberEscape platform.
+ * This file handles logic specific to its directory domain.
+ */
+
+/**
  * Lightweight local persistence for room scores and progress.
  * Provides a fallback when the backend API is unreachable in production.
  */

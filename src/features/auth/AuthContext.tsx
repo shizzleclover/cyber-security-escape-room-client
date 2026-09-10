@@ -1,11 +1,23 @@
 'use client';
 
+/**
+ * @fileoverview AuthContext.tsx
+ * @module auth/AuthContext.tsx
+ * 
+ * React Component/Page for the CyberEscape platform.
+ * This file handles logic specific to its directory domain.
+ */
+
+
 import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import api from '@/lib/api';
 import { getLocalScores } from '@/lib/progressLocal';
 import { getLocalQuiz, markLocalQuizSynced } from '@/lib/quizLocal';
 
+/**
+ * User shape matches the MongoDB user document (minus sensitive fields).
+ */
 interface User {
   id: string;
   name: string;
@@ -15,6 +27,10 @@ interface User {
   role: 'user' | 'admin';
 }
 
+/**
+ * AuthContextType defines the context state and available methods 
+ * for interacting with authentication.
+ */
 interface AuthContextType {
   user: User | null;
   loading: boolean;
@@ -37,6 +53,13 @@ const PROTECTED_ROUTES = ['/hub', '/dashboard', '/profile', '/admin', '/rooms', 
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+/**
+ * AuthProvider wraps the application and maintains the global authentication state.
+ * It handles:
+ * 1. Restoring session on mount via /auth/me
+ * 2. Cross-tab session synchronization (logging out across all tabs if logged out in one)
+ * 3. Syncing offline/local quiz progress to the database once authenticated
+ */
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);

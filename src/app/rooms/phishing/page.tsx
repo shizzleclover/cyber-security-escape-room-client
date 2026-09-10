@@ -1,5 +1,14 @@
 'use client';
 
+/**
+ * @fileoverview page.tsx
+ * @module phishing/page.tsx
+ * 
+ * React Component/Page for the CyberEscape platform.
+ * This file handles logic specific to its directory domain.
+ */
+
+
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -47,6 +56,19 @@ export default function PhishingRoomPage() {
   return <PhishingRoomContent />;
 }
 
+/**
+ * PhishingRoomContent
+ * 
+ * This component renders the interactive Phishing Detection escape room.
+ * It fetches a dynamic list of emails from the backend, iterates through them,
+ * and allows the user to inspect URLs (via hover tooltips) before deciding
+ * whether the email is safe or suspicious.
+ * 
+ * Features:
+ * - Dynamic URL inspection tooltips.
+ * - Progressive hint unlocking.
+ * - Score tracking and backend synchronization upon completion.
+ */
 function PhishingRoomContent() {
   const router = useRouter();
   const [emails, setEmails] = useState<Email[]>([]);

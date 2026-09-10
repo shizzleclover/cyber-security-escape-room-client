@@ -1,5 +1,14 @@
 'use client';
 
+/**
+ * @fileoverview PostInterviewForm.tsx
+ * @module evaluation/PostInterviewForm.tsx
+ * 
+ * React Component/Page for the CyberEscape platform.
+ * This file handles logic specific to its directory domain.
+ */
+
+
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle2, MessageSquare, Send, Sparkles, Star, ThumbsUp, HelpCircle } from 'lucide-react';
