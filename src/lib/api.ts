@@ -6,7 +6,7 @@ import axios from 'axios';
 // NEXT_PUBLIC_API_URL in .env.local to override this.
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL ||
-  'https://cyberescape-api-production.up.railway.app/api';
+  'https://cyber-security-escape-room-sever.onrender.com/api';
 
 /**
  * Configured Axios instance for all API requests.
