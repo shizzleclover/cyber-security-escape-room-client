@@ -362,7 +362,7 @@ export default function LandingPage() {
           
           {/* Green Brand Mascot */}
           <div className="w-56 h-56 rounded-[3rem] bg-white/5 backdrop-blur-sm border border-white/10 flex items-center justify-center mx-auto mb-10 shadow-2xl">
-            <img src="/images/mascot-owl.jpg" alt="CyberEscape Mascot" className="w-52 h-52 object-cover rounded-full shadow-lg" />
+            <img src="/images/logo.svg" alt="CyberEscape Mascot" className="w-52 h-52 object-contain" />
           </div>
 
           {/* Badge */}
@@ -612,7 +612,7 @@ export default function LandingPage() {
         <div className="max-w-4xl mx-auto text-center space-y-6 relative z-10">
           
           <div className="w-40 h-40 rounded-[2rem] bg-white/5 backdrop-blur-sm border border-emerald-500/20 flex items-center justify-center mx-auto mb-6 shadow-xl">
-            <img src="/images/mascot-owl.jpg" alt="CyberEscape Mascot" className="w-36 h-36 object-cover rounded-full shadow-lg" />
+            <img src="/images/logo.svg" alt="CyberEscape Mascot" className="w-36 h-36 object-contain" />
           </div>
 
           <span className="text-xs font-semibold uppercase tracking-wider text-emerald-400 bg-emerald-950/60 border border-emerald-800/80 px-3 py-1 rounded-full">

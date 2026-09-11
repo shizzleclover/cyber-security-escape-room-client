@@ -55,7 +55,7 @@ export default function LoginPage() {
         >
           {/* Logo */}
           <Link href="/" className="inline-flex items-center gap-2 mb-12 group">
-            <img src="/images/mascot-owl.jpg" alt="CyberEscape Mascot" className="w-8 h-8 object-cover rounded-full group-hover:scale-110 transition-transform" />
+            <img src="/images/logo.svg" alt="CyberEscape Mascot" className="w-8 h-8 object-contain group-hover:scale-110 transition-transform" />
             <span className="text-lg font-bold tracking-tight text-zinc-900">
               CyberEscape
             </span>
@@ -137,7 +137,7 @@ export default function LoginPage() {
         
         <div className="relative z-10 max-w-lg p-12">
           <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.2 }} className="w-16 h-16 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center mb-8 border border-white/20 shadow-2xl">
-            <img src="/images/mascot-owl.jpg" alt="Mascot" className="w-10 h-10 object-cover rounded-full shadow-md" />
+            <img src="/images/logo.svg" alt="Mascot" className="w-10 h-10 object-contain" />
           </motion.div>
           <motion.h2 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="text-4xl font-bold text-white mb-6 leading-tight drop-shadow-sm">
             Continue your<br />training.

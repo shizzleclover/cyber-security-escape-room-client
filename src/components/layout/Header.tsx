@@ -44,7 +44,7 @@ export default function Header() {
         {/* Logo */}
         <Link href={user ? '/hub' : '/'} className="flex items-center gap-2.5 group">
           <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform border border-zinc-200">
-            <img src="/images/mascot-owl.jpg" alt="Mascot" className="w-6 h-6 object-cover rounded-full shadow-sm" />
+            <img src="/images/logo.svg" alt="Mascot" className="w-6 h-6 object-contain" />
           </div>
           <div className="flex items-baseline gap-1">
             <span className="text-[15px] font-bold tracking-tight text-zinc-900">
