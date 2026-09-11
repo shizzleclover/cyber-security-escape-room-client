@@ -17,7 +17,7 @@ import api from '@/lib/api';
 import { getLocalQuiz } from '@/lib/quizLocal';
 import { getLocalScores } from '@/lib/progressLocal';
 import {
-  Trophy, TrendingUp, Target, CheckCircle2,
+  Trophy, TrendingUp, TrendingDown, Target, CheckCircle2,
   ArrowRight, BookOpen, BarChart3, Sparkles,
   Mail, Lock, Users, Crown, Medal, Award
 } from 'lucide-react';
@@ -197,19 +197,31 @@ function DashboardContent() {
 
               <div className="p-6 rounded-2xl border border-zinc-200/40 bg-white/70 backdrop-blur-sm shadow-sm hover:shadow-md transition-shadow duration-300">
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center">
-                    <TrendingUp strokeWidth={1.25} className="w-5 h-5 text-emerald-600" />
+                  <div className={`w-10 h-10 rounded-xl border flex items-center justify-center ${
+                    improvement !== null && improvement < 0 
+                      ? 'bg-rose-50 border-rose-100' 
+                      : 'bg-emerald-50 border-emerald-100'
+                  }`}>
+                    {improvement !== null && improvement < 0 ? (
+                      <TrendingDown strokeWidth={1.25} className="w-5 h-5 text-rose-600" />
+                    ) : (
+                      <TrendingUp strokeWidth={1.25} className="w-5 h-5 text-emerald-600" />
+                    )}
                   </div>
                   <span className="text-sm text-zinc-500 font-medium tracking-wide">Improvement</span>
                 </div>
                 <div className="text-3xl font-bold mt-2">
                   {improvement !== null ? (
-                    <span className={improvement > 0 ? 'text-emerald-600' : 'text-zinc-900'}>
+                    <span className={improvement > 0 ? 'text-emerald-600' : improvement < 0 ? 'text-rose-600' : 'text-zinc-900'}>
                       {improvement > 0 ? '+' : ''}{improvement}
                     </span>
                   ) : <span className="text-zinc-900">--</span>}
                 </div>
-                <p className="text-xs text-zinc-400 mt-1">Points gained</p>
+                <p className="text-xs text-zinc-400 mt-1">
+                  {improvement !== null 
+                    ? improvement > 0 ? 'Points gained' : improvement < 0 ? 'Points difference' : 'No change'
+                    : 'Points gained'}
+                </p>
               </div>
             </motion.div>
 
